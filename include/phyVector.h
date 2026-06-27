@@ -20,9 +20,11 @@ public:
     double operator*(const phyVector& other) const; // Dot product operator
     phyVector operator^(const phyVector& other) const; // Cross product operator
     double magnitude() const;
+    double magnitude(int xf,int yf,int zf);
     double getVerticalAngle() const;
     double getverticalAngle2D() const;
     double getVerticalAngle2DDegrees() const;
+    void setXYZ(float x,float y,float z);
 };
 
 #endif // PHYVECTOR_H

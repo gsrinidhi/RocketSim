@@ -1,0 +1,36 @@
+Simulation Date: 2026_6_22
+Simulation Time: 23_3_11
+Timestep = 0.01s
+Initial Mass of Fuel: 180000kg
+Initial Structural Mass: 15000kg
+Payload Mass: 5000kg
+ISP: 400s
+Mass flow rate: 8000kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 500000m
+Target Perigee:500000m
+Stop Time: 8000s
+Mode 2 Pitch angle: 60deg
+Mode 1 to 2 change altitude: 1000m
+Mode 2 to 3 change altitude: 10500m
+Input Polar angle = 90
+Input Azimuth= 0
+Input Inclination= 0
+Burn 1 duration = 14.44
+Radial Velocity = 2920.45 m/s
+Altitude = 18240.4 m
+Time: 43.8 s, Altitude: 100000 m, Velocity: 2935.39 m/s Apogee: 501387m Perigee: -6.28574e+06m Radial Velocity = 2648.27 m/s
+Time: 63.35 s, Altitude: 150006 m, Velocity: 2769.79 m/s Apogee: 501380m Perigee: -6.28574e+06m Radial Velocity = 2468.41 m/s
+Time: 84.42 s, Altitude: 200001 m, Velocity: 2596.47 m/s Apogee: 501383m Perigee: -6.28574e+06m Radial Velocity = 2277.48 m/s
+Time: 107.42 s, Altitude: 250011 m, Velocity: 2413.54 m/s Apogee: 501375m Perigee: -6.28574e+06m Radial Velocity = 2072.16 m/s
+Time: 132.92 s, Altitude: 300001 m, Velocity: 2218.84 m/s Apogee: 501393m Perigee: -6.28574e+06m Radial Velocity = 1847.9 m/s
+Time: 161.97 s, Altitude: 350003 m, Velocity: 2008.47 m/s Apogee: 501377m Perigee: -6.28574e+06m Radial Velocity = 1596.19 m/s
+Time: 196.5 s, Altitude: 400013 m, Velocity: 1777.03 m/s Apogee: 501374m Perigee: -6.28574e+06m Radial Velocity = 1301.38 m/s
+Time: 241.45 s, Altitude: 450009 m, Velocity: 1515 m/s Apogee: 501393m Perigee: -6.28574e+06m Radial Velocity = 923.218 m/s
+Time: 334.68 s, Altitude: 500001 m, Velocity: 1202 m/s Apogee: 501388m Perigee: -6.28574e+06m Radial Velocity = 151.169 m/s
+Coast duration = 327.58
+Burn 2 duration = 8.06
+Depletion time = 350.08
+Injection velocity = 6851.2
+Radial Velocity = 373.278 m/s
+Rocket has crashed back to Earth at time: 1403.53 seconds.

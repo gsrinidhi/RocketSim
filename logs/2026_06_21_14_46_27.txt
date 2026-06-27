@@ -1,0 +1,23 @@
+Input Polar angle = 45
+Input Azimuth= 0
+Input Inclination= 50
+Timestep = 0.1s
+Burn 1 duration = 223.9
+Time: 333.2 s, Altitude: 100018 m, Velocity: 7945.06 m/s
+Time: 502.4 s, Altitude: 150023 m, Velocity: 7885.39 m/s
+Time: 658.7 s, Altitude: 200001 m, Velocity: 7826.21 m/s
+Time: 809.7 s, Altitude: 250012 m, Velocity: 7767.45 m/s
+Time: 960.4 s, Altitude: 300005 m, Velocity: 7709.15 m/s
+Time: 1115.8 s, Altitude: 350029 m, Velocity: 7651.24 m/s
+Time: 1281.8 s, Altitude: 400023 m, Velocity: 7593.8 m/s
+Time: 1468.7 s, Altitude: 450004 m, Velocity: 7536.77 m/s
+Time: 1701.6 s, Altitude: 500005 m, Velocity: 7480.13 m/s
+Coast duration = 1959.5
+Burn 2 duration = 1.1
+Depletion time = 2184.5
+Injection velocity = 7583.2
+Burn 2 duration = 1.2
+Injection time = 2184.6
+Injection velocity = 7583.2
+Final Time: 7999.9 s, Final Altitude: 550892 m, Final Velocity: 7581.28 m/s
+Final Apoapsis Altitude: 558605 m, Final Periapsis Altitude: 517249 m

@@ -1,0 +1,39 @@
+Simulation Date: 2026_6_22
+Simulation Time: 22_47_16
+Timestep = 0.01s
+Initial Mass of Fuel: 1.8e+06kg
+Initial Structural Mass: 150000kg
+Payload Mass: 50000kg
+ISP: 400s
+Mass flow rate: 8000kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 500000m
+Target Perigee:500000m
+Stop Time: 8000s
+Mode 2 Pitch angle: 60deg
+Mode 1 to 2 change altitude: 1000m
+Mode 2 to 3 change altitude: 10500m
+Input Polar angle = 90
+Input Azimuth= 0
+Input Inclination= 0
+Burn 1 duration = 223.85
+Radial Velocity = 253.219 m/s
+Altitude = 70992.4 m
+Time: 333.19 s, Altitude: 100001 m, Velocity: 7930.11 m/sApogee: 507137m Perigee: -30202.4mRadial Velocity = 276.303 m/s
+Time: 505.44 s, Altitude: 150001 m, Velocity: 7870.33 m/sApogee: 507101m Perigee: -30171.5mRadial Velocity = 302.073 m/s
+Time: 667.24 s, Altitude: 200002 m, Velocity: 7811.01 m/sApogee: 507108m Perigee: -30174mRadial Velocity = 314.211 m/s
+Time: 825.71 s, Altitude: 250001 m, Velocity: 7752.17 m/sApogee: 507213m Perigee: -30167.3mRadial Velocity = 314.851 m/s
+Time: 986.87 s, Altitude: 300002 m, Velocity: 7693.68 m/sApogee: 507077m Perigee: -30269.7mRadial Velocity = 304.417 m/s
+Time: 1156.79 s, Altitude: 350002 m, Velocity: 7635.7 m/sApogee: 507091m Perigee: -30226.6mRadial Velocity = 282.38 m/s
+Time: 1345.24 s, Altitude: 400002 m, Velocity: 7578.16 m/sApogee: 507129m Perigee: -30167.7mRadial Velocity = 246.207 m/s
+Time: 1574.29 s, Altitude: 450001 m, Velocity: 7520.98 m/sApogee: 507077m Perigee: -30182.6mRadial Velocity = 188.479 m/s
+Time: 1957.5 s, Altitude: 500000 m, Velocity: 7464.2 m/sApogee: 507032m Perigee: -30232mRadial Velocity = 69.0541 m/s
+Coast duration = 1882.26
+Burn 2 duration = 1.1
+Injection time = 2107.21
+Injection velocity = 7623.94
+Acheived perigee = 500337
+Radial Velocity = 18.8811 m/s
+Time: 3674.88 s, Altitude: 550000 m, Velocity: 7577.64 m/sApogee: 558196m Perigee: 500904mRadial Velocity = 22.1075 m/s
+Final Time: 7999.99 s, Final Altitude: 510399 m, Final Velocity: 7621.2 m/s
+Final Apoapsis Altitude: 557967 m, Final Periapsis Altitude: 500962 m

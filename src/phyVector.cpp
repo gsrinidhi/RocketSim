@@ -51,3 +51,13 @@ double phyVector::getverticalAngle2D() const {
 double phyVector::getVerticalAngle2DDegrees() const {
     return getVerticalAngle() * (180.0 / M_PI);
 }
+
+double phyVector::magnitude(int xf,int yf,int zf) {
+    return sqrt(x * x * xf + y * y * yf + z * z * zf);
+}
+
+void phyVector::setXYZ(float x, float y, float z) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
+}

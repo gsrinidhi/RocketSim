@@ -1,0 +1,27 @@
+Input Polar angle = 45
+Input Azimuth= 0
+Input Inclination= 45
+Timestep = 0.01s
+Initial Mass of Fuel: 1.8e+06
+Mass of Structure: 150000
+Mass of Payload: 50000
+Total Mass: 2e+06
+Mass flow rate: 8000
+ISP: 400
+Target Apogee: 200000
+Target Perigee:200000
+Burn 1 duration = 222.54
+Time: 314.65 s, Altitude: 100001 m, Velocity: 7728.38 m/sApogee: 201755m Perigee: -382763m
+Time: 523.75 s, Altitude: 150001 m, Velocity: 7667.08 m/sApogee: 201804m Perigee: -382648m
+Time: 930.75 s, Altitude: 200000 m, Velocity: 7606.14 m/sApogee: 201757m Perigee: -382693m
+Coast duration = 749.95
+Burn 2 duration = 1.95
+Injection time = 974.44
+Injection velocity = 7856.73
+Acheived perigee = 200041
+Time: 1650.82 s, Altitude: 250001 m, Velocity: 7801.12 m/sApogee: 446098m Perigee: 199968m
+Time: 2035.9 s, Altitude: 300001 m, Velocity: 7743.1 m/sApogee: 446131m Perigee: 200051m
+Time: 2391.22 s, Altitude: 350001 m, Velocity: 7685.46 m/sApogee: 446053m Perigee: 200042m
+Time: 2789.09 s, Altitude: 400001 m, Velocity: 7628.29 m/sApogee: 446071m Perigee: 200107m
+Final Time: 7999.99 s, Final Altitude: 371221 m, Final Velocity: 7661.13 m/s
+Final Apoapsis Altitude: 446082 m, Final Periapsis Altitude: 200030 m

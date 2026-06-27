@@ -1,0 +1,16 @@
+Timestep 0.01
+Init_Fuel_Mass 180000
+Init_Str_Mass 15000
+Payload_Mass 5000
+Isp 400
+Mass_Flow_Rate 800
+Earth_Radius 6371000
+Apoapsis_Target 500000
+Periapsis_Target 500000
+Stop_Time 8000
+Alt_1_2 1000
+Alt_2_3 10500
+Mode_2_Pitch 60
+Init_Polar_Angle 90
+Init_Inertial_Azimuth 0
+Inclination 0

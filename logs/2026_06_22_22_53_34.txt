@@ -1,0 +1,26 @@
+Simulation Date: 2026_6_22
+Simulation Time: 22_53_34
+Timestep = 0.01s
+Initial Mass of Fuel: 180000kg
+Initial Structural Mass: 150000kg
+Payload Mass: 50000kg
+ISP: 400s
+Mass flow rate: 8000kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 500000m
+Target Perigee:500000m
+Stop Time: 8000s
+Mode 2 Pitch angle: 60deg
+Mode 1 to 2 change altitude: 1000m
+Mode 2 to 3 change altitude: 10500m
+Input Polar angle = 90
+Input Azimuth= 0
+Input Inclination= 0
+Burn 2 duration = 22.5
+Depletion time = 22.5
+Injection velocity = 2273.13
+Radial Velocity = 2058.48 m/s
+Time: 65.22 s, Altitude: 100006 m, Velocity: 1907.92 m/s Apogee: 249039m Perigee: -6.323e+06m Radial Velocity = 1653.17 m/s
+Time: 98.6 s, Altitude: 150009 m, Velocity: 1641.9 m/s Apogee: 249057m Perigee: -6.323e+06m Radial Velocity = 1342.58 m/s
+Time: 142.39 s, Altitude: 200001 m, Velocity: 1328.88 m/s Apogee: 249064m Perigee: -6.323e+06m Radial Velocity = 941.343 m/s
+Rocket has crashed back to Earth at time: 481.13 seconds.

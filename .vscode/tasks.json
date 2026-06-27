@@ -15,6 +15,11 @@
             "label": "Clean",
             "type": "shell",
             "command": "make clean"
+        },
+        {
+            "label": "Plot",
+            "type":"shell",
+            "command": "python3 python/param_plot.py"
         }
     ]
 }

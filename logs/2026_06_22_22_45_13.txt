@@ -1,0 +1,43 @@
+Simulation Date: 2026_6_22
+Simulation Time: 22_45_13
+Timestep = 0.1s
+Initial Mass of Fuel: 1.8e+06kg
+Initial Structural Mass: 150000kg
+Payload Mass: 50000kg
+ISP: 400s
+Mass flow rate: 8000kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 500000m
+Target Perigee:500000m
+Stop Time: 8000s
+Mode 2 Pitch angle: 60deg
+Mode 1 to 2 change altitude: 1000m
+Mode 2 to 3 change altitude: 10500m
+Input Polar angle = 90
+Input Azimuth= 0
+Input Inclination= 0
+Burn 1 duration = 223.9
+Radial Velocity = 251.671 m/s
+Altitude = 70978.4 m
+Time: 333.2 s, Altitude: 100024 m, Velocity: 7946.02 m/sApogee: 552845m Perigee: -20217.4mRadial Velocity = 279.457 m/s
+Time: 502.1 s, Altitude: 150016 m, Velocity: 7886.37 m/sApogee: 552899m Perigee: -20246.9mRadial Velocity = 311.255 m/s
+Time: 658.1 s, Altitude: 200016 m, Velocity: 7827.18 m/sApogee: 552925m Perigee: -20263.3mRadial Velocity = 328.824 m/s
+Time: 808.6 s, Altitude: 250025 m, Velocity: 7768.42 m/sApogee: 552932m Perigee: -20273.5mRadial Velocity = 334.899 m/s
+Time: 958.7 s, Altitude: 300030 m, Velocity: 7710.12 m/sApogee: 552928m Perigee: -20266.2mRadial Velocity = 330.605 m/s
+Time: 1113.1 s, Altitude: 350010 m, Velocity: 7652.27 m/sApogee: 552893m Perigee: -20226.3mRadial Velocity = 316.012 m/s
+Time: 1277.9 s, Altitude: 400020 m, Velocity: 7594.82 m/sApogee: 552872m Perigee: -20193.3mRadial Velocity = 290.051 m/s
+Time: 1462.8 s, Altitude: 450014 m, Velocity: 7537.79 m/sApogee: 552814m Perigee: -20143.9mRadial Velocity = 249.769 m/s
+Time: 1691.2 s, Altitude: 500016 m, Velocity: 7481.17 m/sApogee: 552733m Perigee: -20064.6mRadial Velocity = 186.761 m/s
+Time: 2121 s, Altitude: 550001 m, Velocity: 7424.94 m/sApogee: 552570m Perigee: -19934.9mRadial Velocity = 42.8328 m/s
+Coast duration = 1963.9
+Burn 2 duration = 1.1
+Injection time = 2188.9
+Injection velocity = 7576.24
+Acheived perigee = 503945
+Radial Velocity = 19.1525 m/s
+Burn 2 duration = 1.1
+Depletion time = 2188.9
+Injection velocity = 7591.93
+Radial Velocity = 19.193 m/s
+Final Time: 7999.9 s, Final Altitude: 553332 m, Final Velocity: 7590.52 m/s
+Final Apoapsis Altitude: 578761 m, Final Periapsis Altitude: 540536 m
