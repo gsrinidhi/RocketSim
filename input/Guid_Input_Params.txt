@@ -1,0 +1,9 @@
+Apoapsis_Target 500000
+Periapsis_Target 500000
+Stop_Time 8000
+Alt_1_2 1000
+Alt_2_3 10500
+Mode_2_Pitch 60
+Init_Polar_Angle 90
+Init_Inertial_Azimuth 0
+Inclination 0

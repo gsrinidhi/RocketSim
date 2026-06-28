@@ -1,0 +1,18 @@
+Simulation Date: 2026_6_27
+Simulation Time: 14_20_27
+Timestep = 0.01s
+Initial Mass of Fuel: 0kg
+Initial Structural Mass: 0kg
+Payload Mass: 0kg
+ISP: 0s
+Mass flow rate: 0kg/s
+Radius of Earth: 0m
+Target Apogee: 0m
+Target Perigee:0m
+Stop Time: 0s
+Mode 2 Pitch angle: 0deg
+Mode 1 to 2 change altitude: 0m
+Mode 2 to 3 change altitude: 0m
+Input Polar angle = 0
+Input Azimuth= 0
+Input Inclination= 0

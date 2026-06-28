@@ -1,0 +1,18 @@
+Simulation Date: 2026_6_27
+Simulation Time: 15_0_23
+Timestep = 0.01s
+Initial Mass of Fuel: 1.8e+06kg
+Initial Structural Mass: 150000kg
+Payload Mass: 50000kg
+ISP: 400s
+Mass flow rate: 8000kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 500000m
+Target Perigee:500000m
+Stop Time: 8000s
+Mode 2 Pitch angle: 60deg
+Mode 1 to 2 change altitude: 1000m
+Mode 2 to 3 change altitude: 10500m
+Input Polar angle = 0
+Input Azimuth= 0
+Input Inclination= 0

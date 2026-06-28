@@ -1,5 +1,7 @@
 #include "guidance.h"
 #include "phyVector.h"
+#include "cguidance.h"
+#include "phySim.h"
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -9,6 +11,10 @@
 #include <chrono>
 #include <ctime>
 #include <map>
+
+#include "gltest.cpp"
+
+#define PI  3.14
 
 namespace fs = std::filesystem;
 
@@ -78,17 +84,17 @@ double getAzimuthAngle(phyVector s) {
     return atan2(s.y,s.x);
 }
 
-int guidance(phyVector s, phyVector v, double M, double R, double *mode,double *commanded_pitch, double *commanded_heading) {
-
-}
 
 int sim3DOF() {
 
     std::map<std::string, double> configMap;
 
+    phySim sim1;
+
     string inputFileName = "input/Input_Params.txt";
 
-    int k = readInputFile(inputFileName,&configMap);
+    // int k = readInputFile(inputFileName,&configMap);
+    int k = sim1.simInitFile(inputFileName);
     if(k) {
         cout << "Could not read input file" << endl;
         return 1;
@@ -196,25 +202,31 @@ int sim3DOF() {
     phyVector s;
     phyVector a_total;
 
-    dt = configMap["Timestep"];
-    Mfo = configMap["Init_Fuel_Mass"];
-    Ms = configMap["Init_Str_Mass"];
-    Mp = configMap["Payload_Mass"];
-    Isp = configMap["Isp"];
-    m = configMap["Mass_Flow_Rate"];
-    Re = configMap["Earth_Radius"];
-    apoapsis_target = configMap["Apoapsis_Target"];
-    periapsis_target = configMap["Periapsis_Target"];
-    stop_time = configMap["Stop_Time"];
-    mode_1_2_change_altitude = configMap["Alt_1_2"];
-    mode_2_3_change_altitude = configMap["Alt_2_3"];
-    mode_2_pitch = configMap["Mode_2_Pitch"] * pi / 180;
-    phi_init = configMap["Init_Polar_Angle"] * pi / 180;
-    theta_init = configMap["Init_Inertial_Azimuth"] * pi / 180;
-    inclination = configMap["Inclination"] * pi / 180;
+    dt = sim1.getTimeStep();
+    Mfo = sim1.getParam("Init_Fuel_Mass");
+    Ms = sim1.getParam("Init_Str_Mass");
+    Mp = sim1.getParam("Payload_Mass");
+    Isp = sim1.getParam("Isp");
+    m = sim1.getParam("Mass_Flow_Rate");
+    Re = sim1.getParam("Earth_Radius");
+    stop_time = sim1.getParam("Stop_Time");
+    phi_init = sim1.getParam("Init_Polar_Angle")* 180 / pi;
+    theta_init = sim1.getParam("Init_Inertial_Azimuth")* 180 / pi;
+    inclination = sim1.getParam("Inclination")* 180 / pi;
 
     mass = Mfo + Ms + Mp;
     Mf = Mfo;
+
+    CGuidance g1(Me,Re);
+    g1.setAltitudeThresholds(apoapsis_threshold,periapsis_threshold);
+    g1.guidInitFile("input/Guid_Input_Params.txt");
+
+    apoapsis_target = configMap["Apoapsis_Target"];
+    periapsis_target = configMap["Periapsis_Target"];
+    mode_1_2_change_altitude = configMap["Alt_1_2"];
+    mode_2_3_change_altitude = configMap["Alt_2_3"];
+    mode_2_pitch = configMap["Mode_2_Pitch"] * pi / 180;
+    
 
     // 1. Get the current time point
     auto now = std::chrono::system_clock::now();
@@ -232,6 +244,11 @@ int sim3DOF() {
     std::cout<< "Log file name = " << logfilename.str() << endl;
 
     std::ofstream logfile(logfilename.str());
+
+    g1.setLogFile(&logfile);
+    g1.guidInit(s,phi_init,theta_init,inclination);
+
+    sim1.setLogFile(&logfile);
 
     // std::ifstream input_params("input/Input_Params.txt");
     
@@ -267,6 +284,9 @@ int sim3DOF() {
     syo = Re*sin(phi_init)*sin(theta_init);
     szo = Re*cos(phi_init);
     s.setXYZ(sxo, syo, szo); // Initial position at Earth's surface
+
+    v = sim1.getV();
+    s = sim1.getS();
     
     
     
@@ -293,53 +313,11 @@ int sim3DOF() {
             altitude_threshold += 50e3; // Increase threshold for next debug print
         }
 
-        polar_angle = atan2(s.magnitude(1,1,0),s.z);
-        azimuth_angle = atan2(s.y,s.x);
-
-        polar_angle_deg = polar_angle * 180/pi;
-        azimuth_angle_deg = azimuth_angle * 180/pi;
-
-        Xv.x = -cos(polar_angle) * cos(azimuth_angle);
-        Xv.y = -cos(polar_angle) * sin(azimuth_angle);
-        Xv.z = sin(polar_angle);
-
-        Yv.x = sin(azimuth_angle);
-        Yv.y = -cos(azimuth_angle);
-
-        Zv.x = sin(polar_angle) * cos(azimuth_angle);
-        Zv.y = sin(polar_angle) * sin(azimuth_angle);
-        Zv.z = cos(polar_angle);
-
-        // Xv.x = sin(heading_angle) * sin(azimuth_angle) - cos(heading_angle) * cos(polar_angle) * cos(azimuth_angle);
-        // Xv.y = -(sin(heading_angle) * cos(azimuth_angle) + cos(heading_angle) * cos(polar_angle) * sin(azimuth_angle));
-        // Xv.z = cos(heading_angle) * sin(polar_angle);
-
-        // Yv.x = sin(heading_angle) * cos(polar_angle) * cos(azimuth_angle) + cos(heading_angle) * sin(azimuth_angle);
-        // Yv.y = sin(heading_angle) * cos(polar_angle) * sin(azimuth_angle) - cos(heading_angle) * cos(azimuth_angle);
-
-        // Zv.x = sin(polar_angle) * cos(azimuth_angle);
-        // Zv.y = sin(polar_angle) * sin(azimuth_angle);
-        // Zv.z = cos(polar_angle);
-
-        vxv = v * Xv;
-        vyv = v * Yv;
-        vzv = v * Zv;
-
-        local_FPA = atan2(vzv,sqrt(vxv * vxv + vyv * vyv));
+        sim1.updateLocalFrame(v,&local_FPA);
 
         local_FPA_deg = local_FPA * 180/pi;
 
-        hv = (s ^ incV)/s.magnitude();
-
-        kop = hv * Xv;
-        if(kop > 1) {
-            kop = 1;
-        }
-        if(kop < -1) {
-            kop = -1;
-        }
-
-        heading_angle = acos(kop);
+        g1.getHeading(s,Xv,&heading_angle);
 
         heading_angle_deg = heading_angle * 180/pi;
 
@@ -356,95 +334,15 @@ int sim3DOF() {
 
         //Calculate local gravity vector
         g_local = G * Me / (r * r);
-        getApoapsisPeriapsis(s, v, Me, Re, apoapsis_altitude, periapsis_altitude);
-        if(mode == 1) {
-            //Mode 1: Vertical ascent
-            commanded_pitch = 90 * pi / 180; // Keep the rocket vertical
-            if(altitude >= 1000) {
-                mode = 2; // Switch to mode 2 when reaching 1km altitude
-                mode_1_2_switch_over_time = time[i]; // Record the time of switching from mode 1 to mode 2 for reference
-                // heading_angle = inclination;
-            }
-            
-        } else if (mode == 2) {
-            //Mode 2: Gravity turn initiation
-            commanded_pitch = mode_2_pitch; // Start pitching over to the initial pitch angle for gravity turn
-            subMode = 1; // Sub-mode for gravity turn initiation
 
-            if(altitude >= mode_2_3_change_altitude) {
-                mode = 3; // Switch to mode 3 when reaching the altitude to switch to gravity turn continuation
-                mode_2_3_switch_over_time = time[i]; // Record the time of switching from mode 2 to mode 3 for reference
-            }
-        } else if (mode == 3) {
-            //Mode 3: Gravity turn continuation
-            if (subMode == 1) {
-                isThrusting = 1; // Ensure engine is on during gravity turn
-                // Make pitch angle equal to flight path angle
-                if(v.x != 0 || v.z!= 0) {
-                    commanded_pitch = local_FPA;
-                } else {
-                    global_velocity_angle = 0;
-                }
-                if(apoapsis_altitude >= apoapsis_threshold) {
-                    bp = 1;
-                    apoapsis_threshold += 50e3; // Switch to sub-mode 2 when approaching the altitude to switch to mode 3
-                }
-                if(apoapsis_altitude >= apoapsis_target) {
-                    std::cout << "Burn 1 duration = " <<time[i] << endl;
-                    std::cout << "Radial Velocity = " << radial_velocity << " m/s" << endl;
-                    std::cout << "Altitude = " << altitude << " m" << endl;
-                    logfile << "Burn 1 duration = " <<time[i] << endl;
-                    logfile << "Radial Velocity = " << radial_velocity << " m/s" << endl;
-                    logfile << "Altitude = " << altitude << " m" << endl;
-                    burn1_end_time = time[i];
-                    subMode = 2; // Switch to sub-mode 2 when approaching target altitude
-                }
-            } else if (subMode == 2) {
-                isThrusting = 0;
-                // go to submode 3 if altitude is reached
-                if (altitude >= apoapsis_altitude - 5e2) {
-                    coast_end_time = time[i];
-                    std::cout << "Coast duration = " <<coast_end_time - burn1_end_time << endl;
-                    logfile << "Coast duration = " <<coast_end_time - burn1_end_time << endl;
-                    subMode = 3;
-                    periapsis_threshold = periapsis_altitude + 100e3;
-                }
-                
-            } else if (subMode == 3) {
-                isThrusting = 1; // Fire until perigee is raised to target altitude
-                commanded_pitch = local_FPA;
-                if(periapsis_altitude > periapsis_threshold) {
-                    periapsis_threshold += 100e3;
-                }
-                if(periapsis_altitude >= periapsis_target) {
-                    injection_time = time[i]; // Record the time of engine cutoff for reference
-                    res = "Injection time";
-                    std::cout << "Burn 2 duration = " <<(injection_time - coast_end_time) << endl;
-                    std::cout << "Injection time = " << injection_time << endl; 
-                    std::cout << "Injection velocity = " << v.magnitude() <<endl;
-                    std::cout << "Acheived perigee = " << periapsis_altitude << endl;
-                    std::cout << "Radial Velocity = " << radial_velocity << " m/s" << endl;
-                    logfile << "Burn 2 duration = " <<(injection_time - coast_end_time) << endl;
-                    logfile << "Injection time = " << injection_time << endl; 
-                    logfile << "Injection velocity = " << v.magnitude() <<endl;
-                    logfile << "Acheived perigee = " << periapsis_altitude << endl;
-                    logfile << "Radial Velocity = " << radial_velocity << " m/s" << endl;
-                    subMode = 4; // Switch to coasting when perigee is raised to target altitude
-                }
-            } else if (subMode == 4) {
-                isThrusting = 0; // Coasting phase after reaching target orbit
-                mode = 4; // Switch to mode 4 for coasting
-            }
-        } else {
-            //Mode 4: Coasting phase
-            isThrusting = 0; // Engine is off during coasting
-        }
+        g1.getGuidanceOutput(s,v,local_FPA,time[i],&commanded_pitch,&isThrusting);
+        g1.getApoapsisPeriapsis(&apoapsis_altitude,&periapsis_altitude);
 
-        if(isThrusting && depletion_flag == 0) {
-            thrustMag = m * Isp * g_mag; // Update thrust magnitude based on current mass flow rate
-        } else {
-            thrustMag = 0; // No thrust during coasting
-        }
+        // if(isThrusting && depletion_flag == 0) {
+        //     thrustMag = m * Isp * g_mag; // Update thrust magnitude based on current mass flow rate
+        // } else {
+        //     thrustMag = 0; // No thrust during coasting
+        // }
 
         commanded_pitch_deg = commanded_pitch * (180.0 / pi); // Convert commanded pitch to degrees for easier interpretation
 
@@ -460,34 +358,43 @@ int sim3DOF() {
 
         tv_angle = acos(kop) * 180/pi;
 
-        a_total = Xv * thrustMag/mass * cos(commanded_pitch) * cos(heading_angle) + Yv * thrustMag/mass * cos(commanded_pitch) * sin(heading_angle) + Zv * (thrustMag/mass * sin(commanded_pitch) - g_local);
+        sim1.updatePosition(commanded_pitch,heading_angle,isThrusting);
 
-        v = v + a_total * dt;
-        s = s + v * dt;
+        v = sim1.getV();
+        s = sim1.getS();
 
-        radial_velocity = s * v / s.magnitude();
+        Mf = sim1.getFuelMass();
+
+        radial_velocity = sim1.getRadialVelocity();
+
+        // a_total = Xv * thrustMag/mass * cos(commanded_pitch) * cos(heading_angle) + Yv * thrustMag/mass * cos(commanded_pitch) * sin(heading_angle) + Zv * (thrustMag/mass * sin(commanded_pitch) - g_local);
+
+        // v = v + a_total * dt;
+        // s = s + v * dt;
+
+        // radial_velocity = s * v / s.magnitude();
         
-        //decrease mass based on mass flow rate
-        if(isThrusting && depletion_flag == 0) {
-            Mf -= m * dt;
-            mass = Ms + Mp + Mf; // Update total mass of the vehicle
-            if(Mf < 0 && depletion_flag == 0) {
-                Mf = 0; // Ensure fuel mass does not go negative
-                mass = Ms + Mp; // Update total mass when fuel is depleted
-                depletion_flag = 1; // Stop thrusting when fuel is depleted
-                injection_time = time[i]; // Record the time of fuel depletion for reference
-                std::cout << "Burn 2 duration = " <<(injection_time - coast_end_time) << endl;
-                std::cout << "Depletion time = " << injection_time << endl; 
-                std::cout << "Injection velocity = " << v.magnitude() <<endl;
-                logfile << "Burn 2 duration = " <<(injection_time - coast_end_time) << endl;
-                logfile << "Depletion time = " << injection_time << endl; 
-                logfile << "Injection velocity = " << v.magnitude() <<endl;
-                logfile << "Radial Velocity = " << radial_velocity << " m/s" << endl;
-                res = "Fuel depletion time";
-                mode = 4;
+        // //decrease mass based on mass flow rate
+        // if(isThrusting && depletion_flag == 0) {
+        //     Mf -= m * dt;
+        //     mass = Ms + Mp + Mf; // Update total mass of the vehicle
+        //     if(Mf < 0 && depletion_flag == 0) {
+        //         Mf = 0; // Ensure fuel mass does not go negative
+        //         mass = Ms + Mp; // Update total mass when fuel is depleted
+        //         depletion_flag = 1; // Stop thrusting when fuel is depleted
+        //         injection_time = time[i]; // Record the time of fuel depletion for reference
+        //         std::cout << "Burn 2 duration = " <<(injection_time - coast_end_time) << endl;
+        //         std::cout << "Depletion time = " << injection_time << endl; 
+        //         std::cout << "Injection velocity = " << v.magnitude() <<endl;
+        //         logfile << "Burn 2 duration = " <<(injection_time - coast_end_time) << endl;
+        //         logfile << "Depletion time = " << injection_time << endl; 
+        //         logfile << "Injection velocity = " << v.magnitude() <<endl;
+        //         logfile << "Radial Velocity = " << radial_velocity << " m/s" << endl;
+        //         res = "Fuel depletion time";
+        //         mode = 4;
 
-            }
-        }
+        //     }
+        // }
 
         bp = 1;
 
@@ -572,6 +479,14 @@ int sim3DOF() {
 }
 
 int main() {
-    sim3DOF();
+
+    string inputFileName = "input/Sim_Input_Params.txt";
+
+    CGuidance g;
+
+    phySim sim2;
+    sim2.setGuidObj(&g);
+    sim2.simInitFile(inputFileName);
+    sim2.simLoop();
     return 0;
 }

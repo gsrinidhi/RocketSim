@@ -1,0 +1,45 @@
+Simulation Date: 2026_6_27
+Simulation Time: 11_35_38
+Timestep = 0.01s
+Initial Mass of Fuel: 180000kg
+Initial Structural Mass: 15000kg
+Payload Mass: 5000kg
+ISP: 400s
+Mass flow rate: 800kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 500000m
+Target Perigee:500000m
+Stop Time: 8000s
+Mode 2 Pitch angle: 60deg
+Mode 1 to 2 change altitude: 1000m
+Mode 2 to 3 change altitude: 10500m
+Input Polar angle = 90
+Input Azimuth= 0
+Input Inclination= 0
+Burn 1 duration = 223.85
+Altitude = 70992.4 m
+Burn 2 duration = 225
+Depletion time = 225
+Injection velocity = 8141.14
+Radial Velocity = 259.402 m/s
+Time: 323.46 s, Altitude: 100003 m, Velocity: 8107.34 m/s Apogee: 1.10644e+06m Perigee: 24331.5m Radial Velocity = 323.294 m/s
+Time: 460.76 s, Altitude: 150004 m, Velocity: 8048.89 m/s Apogee: 1.10653e+06m Perigee: 24327.3m Radial Velocity = 403.055 m/s
+Time: 576.38 s, Altitude: 200001 m, Velocity: 7990.9 m/s Apogee: 1.1065e+06m Perigee: 24337.9m Radial Velocity = 460.354 m/s
+Time: 680.01 s, Altitude: 250004 m, Velocity: 7933.36 m/s Apogee: 1.10652e+06m Perigee: 24336.5m Radial Velocity = 503.354 m/s
+Time: 776.09 s, Altitude: 300005 m, Velocity: 7876.3 m/s Apogee: 1.10656e+06m Perigee: 24379.3m Radial Velocity = 535.774 m/s
+Time: 867.27 s, Altitude: 350001 m, Velocity: 7819.67 m/s Apogee: 1.10661e+06m Perigee: 24337.7m Radial Velocity = 559.859 m/s
+Time: 955.2 s, Altitude: 400003 m, Velocity: 7763.45 m/s Apogee: 1.10656e+06m Perigee: 24336.4m Radial Velocity = 576.784 m/s
+Time: 1041.04 s, Altitude: 450004 m, Velocity: 7707.66 m/s Apogee: 1.10654e+06m Perigee: 24324.9m Radial Velocity = 587.513 m/s
+Time: 1125.72 s, Altitude: 500000 m, Velocity: 7652.33 m/s Apogee: 1.10666e+06m Perigee: 24328.5m Radial Velocity = 592.653 m/s
+Time: 1210.02 s, Altitude: 550002 m, Velocity: 7597.38 m/s Apogee: 1.10669e+06m Perigee: 24376.2m Radial Velocity = 592.467 m/s
+Time: 1294.73 s, Altitude: 600002 m, Velocity: 7542.79 m/s Apogee: 1.10666e+06m Perigee: 24318.2m Radial Velocity = 587.279 m/s
+Time: 1380.53 s, Altitude: 650005 m, Velocity: 7488.66 m/s Apogee: 1.10677e+06m Perigee: 24402.9m Radial Velocity = 577.144 m/s
+Time: 1468.26 s, Altitude: 700004 m, Velocity: 7434.83 m/s Apogee: 1.10669e+06m Perigee: 24365.5m Radial Velocity = 561.955 m/s
+Time: 1558.86 s, Altitude: 750002 m, Velocity: 7381.39 m/s Apogee: 1.10666e+06m Perigee: 24327m Radial Velocity = 541.568 m/s
+Time: 1653.35 s, Altitude: 800004 m, Velocity: 7328.37 m/s Apogee: 1.10673e+06m Perigee: 24438m Radial Velocity = 515.576 m/s
+Time: 1753.4 s, Altitude: 850002 m, Velocity: 7275.65 m/s Apogee: 1.1067e+06m Perigee: 24397.7m Radial Velocity = 483.266 m/s
+Time: 1861.28 s, Altitude: 900001 m, Velocity: 7223.24 m/s Apogee: 1.10663e+06m Perigee: 24309m Radial Velocity = 443.472 m/s
+Time: 1980.48 s, Altitude: 950001 m, Velocity: 7171.26 m/s Apogee: 1.10666e+06m Perigee: 24395.4m Radial Velocity = 394.288 m/s
+Time: 2118.15 s, Altitude: 1e+06 m, Velocity: 7119.53 m/s Apogee: 1.10661e+06m Perigee: 24298.6m Radial Velocity = 331.687 m/s
+Time: 2290.74 s, Altitude: 1.05e+06 m, Velocity: 7068.2 m/s Apogee: 1.10663e+06m Perigee: 24398.1m Radial Velocity = 246.19 m/s
+Time: 2590.58 s, Altitude: 1.1e+06 m, Velocity: 7017.14 m/s Apogee: 1.10662e+06m Perigee: 24325.6m Radial Velocity = 85.6333 m/s

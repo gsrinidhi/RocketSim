@@ -1,0 +1,36 @@
+Simulation Date: 2026_6_27
+Simulation Time: 15_29_38
+Timestep = 0.01s
+Initial Mass of Fuel: 1.8e+06kg
+Initial Structural Mass: 150000kg
+Payload Mass: 50000kg
+ISP: 400s
+Mass flow rate: 8000kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 500000m
+Target Perigee:500000m
+Stop Time: 8000s
+Mode 2 Pitch angle: 60deg
+Mode 1 to 2 change altitude: 1000m
+Mode 2 to 3 change altitude: 10500m
+Input Polar angle = 0
+Input Azimuth= 0
+Input Inclination= 0
+Burn 1 duration = 223.78
+Altitude = 71594 m
+Time: 327.11 s, Altitude: 100001 m, Velocity: 7927.89 m/s Apogee: 507600m Perigee: -38365.8m Radial Velocity = 285.089 m/s
+Time: 494.79 s, Altitude: 150003 m, Velocity: 7868.11 m/s Apogee: 507602m Perigee: -38322.9m Radial Velocity = 309.131 m/s
+Time: 653.28 s, Altitude: 200000 m, Velocity: 7808.78 m/s Apogee: 507605m Perigee: -38315.1m Radial Velocity = 320.064 m/s
+Time: 809.12 s, Altitude: 250003 m, Velocity: 7749.9 m/s Apogee: 507641m Perigee: -38309.4m Radial Velocity = 319.744 m/s
+Time: 967.86 s, Altitude: 300003 m, Velocity: 7691.46 m/s Apogee: 507615m Perigee: -38282.8m Radial Velocity = 308.607 m/s
+Time: 1135.59 s, Altitude: 350003 m, Velocity: 7633.42 m/s Apogee: 507580m Perigee: -38336.6m Radial Velocity = 285.916 m/s
+Time: 1321.86 s, Altitude: 400002 m, Velocity: 7575.84 m/s Apogee: 507580m Perigee: -38313.6m Radial Velocity = 249.126 m/s
+Time: 1548.05 s, Altitude: 450000 m, Velocity: 7518.65 m/s Apogee: 507558m Perigee: -38358.7m Radial Velocity = 190.927 m/s
+Time: 1923.16 s, Altitude: 500000 m, Velocity: 7461.9 m/s Apogee: 507577m Perigee: -38301.9m Radial Velocity = 72.1661 m/s
+Burn 2 duration = 1.11
+Injection time = 2079.29
+Injection velocity = 7622.27
+Acheived perigee = 500034
+Time: 3596 s, Altitude: 550000 m, Velocity: 7578.24 m/s Apogee: 559646m Perigee: 501632m Radial Velocity = 23.7569 m/s
+Final Time: 7999.99 s, Final Altitude: 511692 m, Final Velocity: 7620.36 m/s
+Final Apoapsis Altitude: 559527 m, Final Periapsis Altitude: 501540 m
