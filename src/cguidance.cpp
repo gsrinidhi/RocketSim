@@ -92,13 +92,15 @@ int CGuidance::guidInitFile(std::string fname) {
     file.close();
 
     polar_angle = configMap["Init_Polar_Angle"] * PI/180;
-    intertial_azimuth = configMap["Init_Inertial_Azimuth"] * PI /180;
+    inertial_azimuth = configMap["Init_Inertial_Azimuth"] * PI /180;
     inclination = configMap["Inclination"] * PI / 180;
+    tower_clearance_altitude = configMap["Tower_Clearance_Altitude"];
     mode_1_2_change_altitude = configMap["Alt_1_2"];
     mode_2_3_change_altitude = configMap["Alt_2_3"];
     mode_2_pitch = configMap["Mode_2_Pitch"] * PI / 180;
     apoapsis_target = configMap["Apoapsis_Target"];
     periapsis_target = configMap["Periapsis_Target"];
+    incV.setXYZ(sin(inclination) * sin(inertial_azimuth),sin(inclination)*cos(inertial_azimuth),cos(inclination));
 }
 
 double CGuidance::getParam(std::string pname) {
@@ -197,6 +199,99 @@ int CGuidance::getGuidanceOutput(phyVector s, phyVector v, double local_FPA,doub
             //Mode 4: Coasting phase
             *isThrusting = 0; // Engine is off during coasting
         }
+}
+
+int CGuidance::getGuidanceOutputQuat(phyVector s, phyVector v, double local_FPA,double time,double heading_angle,phyVector Xv, phyVector Yv,phyVector Zv,Quaternion &cmd_q,int *isThrusting) {
+    altitude = s.magnitude() - Re;
+    getApoapsisPeriapsis(s, v, Me, Re, apoapsis_altitude, periapsis_altitude);
+    double commanded_pitch = 0, commanded_heading = heading_angle;
+        if(mode == 1) {
+            //Mode 1: Vertical ascent
+            commanded_pitch = 90 * PI / 180; // Keep the rocket vertical
+            *isThrusting = 1;
+            if(altitude >= tower_clearance_altitude) {
+                (*logfile) << "Tower clearance altitude reached at time = " << time << std::endl;
+                commanded_heading = heading_angle;
+            } else {
+                commanded_heading = 0; // Keep heading straight up during tower clearance
+            }
+            if(altitude >= mode_1_2_change_altitude) {
+                mode = 2; // Switch to mode 2 when reaching 1km altitude
+            }
+            
+        } else if (mode == 2) {
+            //Mode 2: Gravity turn initiation
+            commanded_pitch = mode_2_pitch; // Start pitching over to the initial pitch angle for gravity turn
+            commanded_heading = heading_angle; // Maintain the commanded heading during gravity turn initiation
+            subMode = 1; // Sub-mode for gravity turn initiation
+            *isThrusting = 1;
+            if(altitude >= mode_2_3_change_altitude) {
+                mode = 3; // Switch to mode 3 when reaching the altitude to switch to gravity turn continuation
+            }
+        } else if (mode == 3) {
+            commanded_heading = heading_angle; // Maintain the commanded heading during gravity turn continuation
+            //Mode 3: Gravity turn continuation
+            if (subMode == 1) {
+                *isThrusting = 1; // Ensure engine is on during gravity turn
+                // Make pitch angle equal to flight path angle
+                if(v.x != 0 || v.z!= 0) {
+                    commanded_pitch = local_FPA;
+                } else {
+                    
+                }
+                if(apoapsis_altitude >= apoapsis_threshold) {
+                    apoapsis_threshold += 50e3; // Switch to sub-mode 2 when approaching the altitude to switch to mode 3
+                }
+                if(apoapsis_altitude >= apoapsis_target) {
+                    (*logfile) << "Burn 1 duration = " <<time << std::endl;
+                    // *logfile << "Radial Velocity = " << radial_velocity << " m/s" << std::endl;
+                    (*logfile) << "Altitude = " << altitude << " m" << std::endl;
+                    burn1_end_time = time;
+                    subMode = 2; // Switch to sub-mode 2 when approaching target altitude
+                }
+            } else if (subMode == 2) {
+                *isThrusting = 0;
+                // go to submode 3 if altitude is reached
+                if (altitude >= apoapsis_altitude - 5e2) {
+                    coast_end_time = time;
+                    // *logfile << "Coast duration = " <<coast_end_time - burn1_end_time << endl;
+                    subMode = 3;
+                    periapsis_threshold = periapsis_altitude + 100e3;
+                }
+                
+            } else if (subMode == 3) {
+                *isThrusting = 1; // Fire until perigee is raised to target altitude
+                commanded_pitch = local_FPA;
+                if(periapsis_altitude > periapsis_threshold) {
+                    periapsis_threshold += 100e3;
+                }
+                if(periapsis_altitude >= periapsis_target) {
+                    injection_time = time; // Record the time of engine cutoff for reference
+                    // res = "Injection time";
+                    // std::cout << "Burn 2 duration = " <<(injection_time - coast_end_time) << endl;
+                    // std::cout << "Injection time = " << injection_time << endl; 
+                    // std::cout << "Injection velocity = " << v.magnitude() <<endl;
+                    // std::cout << "Acheived perigee = " << periapsis_altitude << endl;
+                    // std::cout << "Radial Velocity = " << radial_velocity << " m/s" << endl;
+                    (*logfile) << "Burn 2 duration = " <<(injection_time - coast_end_time) << std::endl;
+                    (*logfile) << "Injection time = " << injection_time << std::endl; 
+                    (*logfile) << "Injection velocity = " << v.magnitude() << std::endl;
+                    (*logfile) << "Acheived perigee = " << periapsis_altitude << std::endl;
+                    // logfile << "Radial Velocity = " << radial_velocity << " m/s" << endl;
+                    subMode = 4; // Switch to coasting when perigee is raised to target altitude
+                }
+            } else if (subMode == 4) {
+                isThrusting = 0; // Coasting phase after reaching target orbit
+                mode = 4; // Switch to mode 4 for coasting
+            }
+        } else {
+            //Mode 4: Coasting phase
+            *isThrusting = 0; // Engine is off during coasting
+        }
+        cmd_x = Zv * sin(commanded_pitch) + Xv * cos(commanded_pitch) *cos(commanded_heading) + Yv * cos(commanded_pitch) * sin(commanded_heading);
+        cmd_z = -Zv * cos(commanded_pitch) + Xv * sin(commanded_pitch) *cos(commanded_heading) + Yv * sin(commanded_pitch) * sin(commanded_heading);
+        cmd_y = cmd_z ^ cmd_x;
+        cmd_q = Quaternion::getRotationQuaternion(cmd_x,cmd_y,cmd_z);
 }
 
 double CGuidance::getApoapsisPeriapsis(double *apo, double *peri) {

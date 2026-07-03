@@ -1,0 +1,72 @@
+Simulation Date: 2026_7_1
+Simulation Time: 23_32_20
+Timestep = 0.1s
+Initial Mass of Fuel: 180000kg
+Initial Structural Mass: 15000kg
+Payload Mass: 5000kg
+ISP: 400s
+Mass flow rate: 800kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 0m
+Target Perigee:0m
+Stop Time: 8000s
+Mode 2 Pitch angle: 0deg
+Mode 1 to 2 change altitude: 0m
+Mode 2 to 3 change altitude: 0m
+Input Polar angle = 295453
+Input Azimuth= 0
+Input Inclination= 0
+Tower clearance altitude reached at time = 12.7
+Tower clearance altitude reached at time = 12.8
+Tower clearance altitude reached at time = 12.9
+Tower clearance altitude reached at time = 13
+Tower clearance altitude reached at time = 13.1
+Tower clearance altitude reached at time = 13.2
+Tower clearance altitude reached at time = 13.3
+Tower clearance altitude reached at time = 13.4
+Tower clearance altitude reached at time = 13.5
+Tower clearance altitude reached at time = 13.6
+Tower clearance altitude reached at time = 13.7
+Tower clearance altitude reached at time = 13.8
+Tower clearance altitude reached at time = 13.9
+Tower clearance altitude reached at time = 14
+Tower clearance altitude reached at time = 14.1
+Tower clearance altitude reached at time = 14.2
+Tower clearance altitude reached at time = 14.3
+Tower clearance altitude reached at time = 14.4
+Tower clearance altitude reached at time = 14.5
+Tower clearance altitude reached at time = 14.6
+Tower clearance altitude reached at time = 14.7
+Tower clearance altitude reached at time = 14.8
+Tower clearance altitude reached at time = 14.9
+Tower clearance altitude reached at time = 15
+Tower clearance altitude reached at time = 15.1
+Tower clearance altitude reached at time = 15.2
+Tower clearance altitude reached at time = 15.3
+Tower clearance altitude reached at time = 15.4
+Tower clearance altitude reached at time = 15.5
+Tower clearance altitude reached at time = 15.6
+Tower clearance altitude reached at time = 15.7
+Tower clearance altitude reached at time = 15.8
+Tower clearance altitude reached at time = 15.9
+Tower clearance altitude reached at time = 16
+Tower clearance altitude reached at time = 16.1
+Tower clearance altitude reached at time = 16.2
+Tower clearance altitude reached at time = 16.3
+Tower clearance altitude reached at time = 16.4
+Tower clearance altitude reached at time = 16.5
+Tower clearance altitude reached at time = 16.6
+Tower clearance altitude reached at time = 16.7
+Tower clearance altitude reached at time = 16.8
+Tower clearance altitude reached at time = 16.9
+Tower clearance altitude reached at time = 17
+Tower clearance altitude reached at time = 17.1
+Tower clearance altitude reached at time = 17.2
+Tower clearance altitude reached at time = 17.3
+Tower clearance altitude reached at time = 17.4
+Tower clearance altitude reached at time = 17.5
+Tower clearance altitude reached at time = 17.6
+Tower clearance altitude reached at time = 17.7
+Tower clearance altitude reached at time = 17.8
+Burn 1 duration = 222.6
+Altitude = 83669.6 m

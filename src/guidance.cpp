@@ -1,6 +1,7 @@
 #include "guidance.h"
 #include "phyVector.h"
 #include "cguidance.h"
+#include "quaternion.h"
 #include "phySim.h"
 #include <iostream>
 #include <cmath>
@@ -91,7 +92,10 @@ int sim3DOF() {
 
     phySim sim1;
 
-    string inputFileName = "input/Input_Params.txt";
+    // string inputFileName = "input/Input_Params.txt";
+    string inputFileName = "input/Sim_Input_Params.txt";
+
+    // sim1.simInitFile(inputFileName);
 
     // int k = readInputFile(inputFileName,&configMap);
     int k = sim1.simInitFile(inputFileName);
@@ -246,7 +250,7 @@ int sim3DOF() {
     std::ofstream logfile(logfilename.str());
 
     g1.setLogFile(&logfile);
-    g1.guidInit(s,phi_init,theta_init,inclination);
+    // g1.guidInit(s,phi_init,theta_init,inclination);
 
     sim1.setLogFile(&logfile);
 
@@ -287,6 +291,8 @@ int sim3DOF() {
 
     v = sim1.getV();
     s = sim1.getS();
+
+    Quaternion cmd_q;
     
     
     
@@ -305,6 +311,7 @@ int sim3DOF() {
         //calculate current altitude
         r = s.magnitude();
         altitude = r - Re;
+        sim1.getLocalFrame(&Xv,&Yv,&Zv);
 
         if (altitude >= altitude_threshold) {
             // Debug print statements for altitude and velocity
@@ -335,7 +342,8 @@ int sim3DOF() {
         //Calculate local gravity vector
         g_local = G * Me / (r * r);
 
-        g1.getGuidanceOutput(s,v,local_FPA,time[i],&commanded_pitch,&isThrusting);
+        // g1.getGuidanceOutput(s,v,local_FPA,time[i],&commanded_pitch,&isThrusting);
+        g1.getGuidanceOutputQuat(s,v,local_FPA,time[i],heading_angle,Xv,Yv,Zv,cmd_q,&isThrusting);
         g1.getApoapsisPeriapsis(&apoapsis_altitude,&periapsis_altitude);
 
         // if(isThrusting && depletion_flag == 0) {
@@ -358,7 +366,8 @@ int sim3DOF() {
 
         tv_angle = acos(kop) * 180/pi;
 
-        sim1.updatePosition(commanded_pitch,heading_angle,isThrusting);
+        // sim1.updatePosition(commanded_pitch,heading_angle,isThrusting);
+        sim1.updatePositionQuat(cmd_q,isThrusting);
 
         v = sim1.getV();
         s = sim1.getS();
@@ -488,5 +497,6 @@ int main() {
     sim2.setGuidObj(&g);
     sim2.simInitFile(inputFileName);
     sim2.simLoop();
+    // sim3DOF();
     return 0;
 }

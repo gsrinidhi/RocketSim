@@ -25,7 +25,7 @@ all: $(TARGET)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(TARGET): $(BUILD_DIR)/phyVector.o $(BUILD_DIR)/guidance.o $(BUILD_DIR)/cguidance.o $(BUILD_DIR)/phySim.o $(BUILD_DIR)/glad.o $(BUILD_DIR)/gltest.o
+$(TARGET): $(BUILD_DIR)/phyVector.o $(BUILD_DIR)/guidance.o $(BUILD_DIR)/cguidance.o $(BUILD_DIR)/phySim.o $(BUILD_DIR)/glad.o $(BUILD_DIR)/gltest.o $(BUILD_DIR)/quaternion.o $(BUILD_DIR)/simObject.o $(BUILD_DIR)/simBody.o
 	$(COMPILER) $^  -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/phyVector.o: $(SRC_DIR)/phyVector.cpp | $(BUILD_DIR)
@@ -44,6 +44,15 @@ $(BUILD_DIR)/glad.o: $(SRC_DIR)/glad.c | $(BUILD_DIR)
 	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
 
 $(BUILD_DIR)/gltest.o: $(SRC_DIR)/gltest.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/quaternion.o: $(SRC_DIR)/quaternion.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/simObject.o: $(SRC_DIR)/simObject.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/simBody.o: $(SRC_DIR)/simBody.cpp | $(BUILD_DIR)
 	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
 
 clean:

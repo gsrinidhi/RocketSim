@@ -1,0 +1,8 @@
+Burn 1 duration = 224
+Altitude = 70918.8 m
+Burn 2 duration = 1.1
+Injection time = 2237.4
+Injection velocity = 7553.18
+Acheived perigee = 513182
+Depletion time = 2237.4
+Injection velocity = 7568.89

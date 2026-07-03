@@ -1,6 +1,7 @@
 Apoapsis_Target 500000
 Periapsis_Target 500000
 Stop_Time 8000
+Tower_Clearance_Altitude 500
 Alt_1_2 1000
 Alt_2_3 10500
 Mode_2_Pitch 60

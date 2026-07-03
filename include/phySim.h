@@ -33,6 +33,9 @@
 #include <unistd.h>
 
 #include "cguidance.h"
+#include "quaternion.h"
+#include "simObject.hpp"
+#include "simBody.hpp"
 
 #define PI 3.14159265358979323846
 
@@ -62,6 +65,7 @@ class phySim {
     double time;
     int sim_iter;
     int isThrusting;
+    int sim_run_flag;
     phyVector Xv,Yv,Zv;
     phyVector s,v,a;
     std::map<std::string, double> configMap;
@@ -98,6 +102,8 @@ public:
     void simInit(phyVector s, phyVector v);
     void updateLocalFrame(phyVector v,double *local_FPA);
     void updatePosition(double pitch,double heading,double isThrusting);
+    void updatePositionQuat(Quaternion cmd_q,double isThrusting);
+    void getLocalFrame(phyVector *Xv,phyVector *Yv,phyVector *Zv);
     double getPolarAngle();
     double getAzimuthAngle();
     double getFuelMass();
@@ -117,9 +123,13 @@ public:
     void simLoop();
     void populateSphereVertices(double radius,std::vector<float> *vertices,std::vector<unsigned int> *indices);
     void populateCylinderVertices(double radius,double height,std::vector<float> *vertices,std::vector<unsigned int> *indices);
+    void populateCylinderVertices(double radius, double height, SimObject *obj);
+    void populateConeVertices(double radius, double height, SimObject *obj);
     int testGL();
     void guidInit(std::string gInitFile);
     void setGuidObj(CGuidance *g);
+    void checkSymStart(GLFWwindow* window,int key);
+    void checkSymStop(GLFWwindow* window,int key);
 
 
 };

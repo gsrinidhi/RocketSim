@@ -1,0 +1,19 @@
+Simulation Date: 2026_7_1
+Simulation Time: 23_11_46
+Timestep = 0.1s
+Initial Mass of Fuel: 180000kg
+Initial Structural Mass: 15000kg
+Payload Mass: 5000kg
+ISP: 400s
+Mass flow rate: 800kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 0m
+Target Perigee:0m
+Stop Time: 2500s
+Mode 2 Pitch angle: 0deg
+Mode 1 to 2 change altitude: 0m
+Mode 2 to 3 change altitude: 0m
+Input Polar angle = 295453
+Input Azimuth= 0
+Input Inclination= 0
+Rocket has crashed back to Earth at time: 2.1 seconds.

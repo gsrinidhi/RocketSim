@@ -1,0 +1,85 @@
+Simulation Date: 2026_7_1
+Simulation Time: 23_20_36
+Timestep = 0.1s
+Initial Mass of Fuel: 180000kg
+Initial Structural Mass: 15000kg
+Payload Mass: 5000kg
+ISP: 400s
+Mass flow rate: 800kg/s
+Radius of Earth: 6.371e+06m
+Target Apogee: 0m
+Target Perigee:0m
+Stop Time: 2500s
+Mode 2 Pitch angle: 0deg
+Mode 1 to 2 change altitude: 0m
+Mode 2 to 3 change altitude: 0m
+Input Polar angle = 295453
+Input Azimuth= 0
+Input Inclination= 0
+Tower clearance altitude reached at time = 12.7
+Tower clearance altitude reached at time = 12.8
+Tower clearance altitude reached at time = 12.9
+Tower clearance altitude reached at time = 13
+Tower clearance altitude reached at time = 13.1
+Tower clearance altitude reached at time = 13.2
+Tower clearance altitude reached at time = 13.3
+Tower clearance altitude reached at time = 13.4
+Tower clearance altitude reached at time = 13.5
+Tower clearance altitude reached at time = 13.6
+Tower clearance altitude reached at time = 13.7
+Tower clearance altitude reached at time = 13.8
+Tower clearance altitude reached at time = 13.9
+Tower clearance altitude reached at time = 14
+Tower clearance altitude reached at time = 14.1
+Tower clearance altitude reached at time = 14.2
+Tower clearance altitude reached at time = 14.3
+Tower clearance altitude reached at time = 14.4
+Tower clearance altitude reached at time = 14.5
+Tower clearance altitude reached at time = 14.6
+Tower clearance altitude reached at time = 14.7
+Tower clearance altitude reached at time = 14.8
+Tower clearance altitude reached at time = 14.9
+Tower clearance altitude reached at time = 15
+Tower clearance altitude reached at time = 15.1
+Tower clearance altitude reached at time = 15.2
+Tower clearance altitude reached at time = 15.3
+Tower clearance altitude reached at time = 15.4
+Tower clearance altitude reached at time = 15.5
+Tower clearance altitude reached at time = 15.6
+Tower clearance altitude reached at time = 15.7
+Tower clearance altitude reached at time = 15.8
+Tower clearance altitude reached at time = 15.9
+Tower clearance altitude reached at time = 16
+Tower clearance altitude reached at time = 16.1
+Tower clearance altitude reached at time = 16.2
+Tower clearance altitude reached at time = 16.3
+Tower clearance altitude reached at time = 16.4
+Tower clearance altitude reached at time = 16.5
+Tower clearance altitude reached at time = 16.6
+Tower clearance altitude reached at time = 16.7
+Tower clearance altitude reached at time = 16.8
+Tower clearance altitude reached at time = 16.9
+Tower clearance altitude reached at time = 17
+Tower clearance altitude reached at time = 17.1
+Tower clearance altitude reached at time = 17.2
+Tower clearance altitude reached at time = 17.3
+Tower clearance altitude reached at time = 17.4
+Tower clearance altitude reached at time = 17.5
+Tower clearance altitude reached at time = 17.6
+Tower clearance altitude reached at time = 17.7
+Tower clearance altitude reached at time = 17.8
+Burn 1 duration = 222.6
+Altitude = 83669.6 m
+Time: 245.6 s, Altitude: 100036 m, Velocity: 7744.27 m/s Apogee: 533903m Perigee: -665934m Radial Velocity = 708.323 m/s
+Time: 317.5 s, Altitude: 150025 m, Velocity: 7683.05 m/s Apogee: 533877m Perigee: -665916m Radial Velocity = 682.37 m/s
+Time: 392.5 s, Altitude: 200004 m, Velocity: 7622.3 m/s Apogee: 533858m Perigee: -665906m Radial Velocity = 650.583 m/s
+Time: 471.7 s, Altitude: 250008 m, Velocity: 7561.95 m/s Apogee: 533824m Perigee: -665885m Radial Velocity = 612.269 m/s
+Time: 556.6 s, Altitude: 300037 m, Velocity: 7502.01 m/s Apogee: 533800m Perigee: -665868m Radial Velocity = 566.345 m/s
+Time: 649.4 s, Altitude: 350027 m, Velocity: 7442.53 m/s Apogee: 533768m Perigee: -665840m Radial Velocity = 511.098 m/s
+Time: 754.2 s, Altitude: 400036 m, Velocity: 7383.44 m/s Apogee: 533725m Perigee: -665811m Radial Velocity = 443.264 m/s
+Time: 879.2 s, Altitude: 450007 m, Velocity: 7324.79 m/s Apogee: 533668m Perigee: -665774m Radial Velocity = 356.15 m/s
+Time: 1050 s, Altitude: 500013 m, Velocity: 7266.49 m/s Apogee: 533606m Perigee: -665743m Radial Velocity = 228.975 m/s
+Depletion time = 1308.3
+Injection velocity = 7235.33
+Final Time: 2499.9 s, Final Altitude: 180585 m, Final Velocity: 7652.78 m/s
+Final Apoapsis Altitude: 547514 m, Final Periapsis Altitude: -658626 m

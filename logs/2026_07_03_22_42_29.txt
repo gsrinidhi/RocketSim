@@ -1,0 +1,4 @@
+Tower clearance altitude reached at time = 12.8
+Tower clearance altitude reached at time = 12.9
+Tower clearance altitude reached at time = 13
+Tower clearance altitude reached at time = 13.1

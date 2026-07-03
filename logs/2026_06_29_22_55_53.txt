@@ -1,0 +1,2 @@
+Burn 1 duration = 224
+Altitude = 70918.8 m
