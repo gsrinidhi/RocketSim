@@ -12,3 +12,4 @@ Stop_Time 5000
 Init_Polar_Angle 90
 Init_Inertial_Azimuth 0
 Inclination 0
+Mode 1

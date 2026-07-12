@@ -67,3 +67,24 @@ void SimBody::setPosition(phyVector s) {
 void SimBody::setVelocity(phyVector v) {
     this->v = v;
 }
+
+void SimBody::rotateAlongBodyAxis(int axis,double angle) {
+    phyVector rot_Axis;
+    if(axis == 1) {
+        rot_Axis = body_x;
+    } else if(axis == 2) {
+        rot_Axis = body_y;
+    } else {
+        rot_Axis = body_z;
+    }
+
+    Quaternion q(angle,rot_Axis);
+    body_x = q.rotateVector(body_x);
+    // body
+}
+
+void SimBody::getBodyAxes(phyVector *x,phyVector *y, phyVector *z) {
+    *x = body_x;
+    *y = body_y;
+    *z = body_z;
+}

@@ -20,6 +20,10 @@
 #include <GLFW/glfw3.h>
 #include<math.h>
 
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -99,6 +103,10 @@ class phySim {
     Quaternion cam_quat;
 
     float camDistance;
+
+    double windowHeight,windowWidth;
+
+    int simMode;
     
 
     

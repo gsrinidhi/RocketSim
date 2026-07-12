@@ -99,6 +99,7 @@ int phySim::simInitFile(std::string fname) {
     phi_init = configMap["Init_Polar_Angle"] * PI / 180;
     theta_init = configMap["Init_Inertial_Azimuth"] * PI / 180;
     inclination = configMap["Inclination"] * PI / 180;
+    simMode = configMap["Mode"];
 
     mass = Mfo + Ms + Mp;
     Mf = Mfo;
@@ -261,6 +262,8 @@ void phySim::resize(int width, int height)
         (float)(10.0f * Re_sim)
     );
     glViewport(0, 0, width, height);
+    windowWidth = width;
+    windowHeight = height;
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -451,8 +454,11 @@ int phySim::initRender() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    windowWidth = 800;
+    windowHeight = 600;
+
     // Create window
-    window = glfwCreateWindow(800, 600, "Triangle", NULL, NULL);
+    window = glfwCreateWindow(windowWidth, windowHeight, "Triangle", NULL, NULL);
     if (!window) {
         std::cout << "Failed to create window\n";
         glfwTerminate();
@@ -468,6 +474,17 @@ int phySim::initRender() {
         std::cout << "Failed to init GLAD\n";
         return -1;
     }
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
 
     return 0;
 }
@@ -917,6 +934,8 @@ void phySim::simLoop() {
     drawableFlags.push_back(1);
     earth.setDrawLines(1);
 
+    double apogee =0,perigee = 0;
+
     
 
     while (!glfwWindowShouldClose(window))
@@ -924,11 +943,15 @@ void phySim::simLoop() {
 
         checkSymStart(window,GLFW_KEY_S);
         checkSymStop(window,GLFW_KEY_P);
-        if(sim_iter == 0) {
-            glClearColor(0,0,0,1);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glUseProgram(shaderProgram);
+        glUseProgram(shaderProgram);
+        if(sim_iter == 0) {
+            // glClearColor(0,0,0,1);
+            // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            // glUseProgram(shaderProgram);
             earth.draw(view,projection,model,shaderProgram);
             // rocket_body.draw(view,projection,model_rocket,shaderProgram);
             rocket_body.drawUsingState(Re_scale,view,projection,shaderProgram);
@@ -947,6 +970,7 @@ void phySim::simLoop() {
                 g1->getGuidanceOutputQuat(s,v,local_FPA,time,heading_angle,Xv,Yv,Zv,cmd_q,&isThrusting);
                 // updatePosition(commanded_pitch,heading_angle,isThrusting);
                 updatePositionQuat(cmd_q,isThrusting);
+                g1->getApoapsisPeriapsis(&apogee,&perigee);
                 cmd_q_conj = cmd_q.conjugate();
                 // rotate_angle = cmd_q_conj.getRotationAngle();
                 // rot_axis = cmd_q_conj.getRotationAxis();
@@ -978,22 +1002,43 @@ void phySim::simLoop() {
                     break;
                 }
 
-                transformBody(window,&tr_offset,&view);
+                // transformBody(window,&tr_offset,&view);
+
+                
                 rocket_body.updateState(cmd_q,a,dt,Re_scale);
+
+
 
                 
             }
         }
 
-        glClearColor(0,0,0,1);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
-        glUseProgram(shaderProgram);
+        ImGui::SetNextWindowSize(ImVec2(windowWidth/5, windowHeight/5));
+
+        ImGui::Begin("Telemetry");
+
+        ImGui::Text("Time: %.2f", time);
+        ImGui::Text("Altitude: %.2f km", (s.magnitude() - Re)/1000);
+        ImGui::Text("Velocity: %.2f m/s", v.magnitude());
+        ImGui::Text("Apogee: %.2f km", apogee/1000);
+        ImGui::Text("Perigee: %.2f km", perigee/1000);
+
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        
         earth.draw(view,projection,model,shaderProgram);
 
         // rocket_body.draw(view,projection,model_rocket,shaderProgram);
         
         rocket_body.drawUsingState(Re_scale,view,projection,shaderProgram);
+
+        
 
         glfwSwapBuffers(window);
                 
@@ -1004,6 +1049,9 @@ void phySim::simLoop() {
     }
 
     // Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
     glDeleteVertexArrays(1, &earth_vao);
     glDeleteBuffers(1, &earth_vbo);
     glDeleteBuffers(1, &earth_ebo);

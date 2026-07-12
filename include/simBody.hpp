@@ -22,6 +22,8 @@ public:
     void drawUsingState(double scale,const glm::mat4& view, const glm::mat4& projection, GLuint shaderProgram);
     void setPosition(phyVector s);
     void setVelocity(phyVector v);
+    void rotateAlongBodyAxis(int axis,double angle);
+    void getBodyAxes(phyVector *x,phyVector *y, phyVector *z);
 };
 
 #endif // SIMBODY_HPP
