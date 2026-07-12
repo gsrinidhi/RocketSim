@@ -38,3 +38,32 @@ void SimBody::draw(const glm::mat4& view, const glm::mat4& projection, const glm
 void SimBody::updateDrawableFlags(const std::vector<int>& flags) {
     isDrawable = flags;
 }
+
+void SimBody::updateState(Quaternion cmd_q, phyVector acceleration,double dt,double scale) {
+    v = v + acceleration * dt;
+    s = s + v * dt;
+    body_x = cmd_q.rotateVector(phyVector(1,0,0));
+    body_y = cmd_q.rotateVector(phyVector(0,1,0));
+    body_z = cmd_q.rotateVector(phyVector(0,0,1));
+    for (size_t i = 0; i < objects.size(); ++i) {
+        offset = body_x * offset_positions[i].x + body_y * offset_positions[i].y + body_z * offset_positions[i].z;
+        objects[i].updateState(cmd_q,s,dt,offset);
+    }
+}
+
+void SimBody::drawUsingState(double scale,const glm::mat4& view, const glm::mat4& projection, GLuint shaderProgram) {
+    for (size_t i = 0; i < objects.size(); ++i) {
+        if (isDrawable.size() > i && isDrawable[i] == 0) {
+            continue; // Skip drawing this object if it's marked as not drawable
+        }
+        objects[i].drawUsingState(scale,view,projection,shaderProgram);
+    }
+}
+
+void SimBody::setPosition(phyVector s) {
+    this->s = s;
+}
+
+void SimBody::setVelocity(phyVector v) {
+    this->v = v;
+}

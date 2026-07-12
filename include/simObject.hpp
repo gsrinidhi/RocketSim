@@ -2,6 +2,7 @@
 #define SIMOBJECT_HPP
 
 #include "phyVector.h"
+#include "quaternion.h"
 #include <vector>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -21,6 +22,9 @@ class SimObject {
     int modelLoc, viewLoc, projectionLoc; // Uniform locations for shader
     int colorLoc, offsetLoc; // Uniform locations for color and offset
     double color[3]; // RGB color for rendering
+    int drawLines; // Flag to determine if lines should be drawn along with filled polygons
+    double rot_angle;
+    phyVector rot_axis;
     public:
     SimObject();
     SimObject(phyVector position, phyVector velocity, phyVector acceleration, double mass);
@@ -44,6 +48,12 @@ class SimObject {
     phyVector getBodyFrameZ();
     void addVertex(float x, float y, float z);
     void addIndex(unsigned int index);
+    void setDrawLines(int drawLines);
+    void updateState(Quaternion cmd_q, phyVector acceleration,double dt,double scale,phyVector offset);
+    void updateState(Quaternion cmd_q, phyVector posRef,double dt,phyVector offset);
+    void drawUsingState(double scale,const glm::mat4& view, const glm::mat4& projection, GLuint shaderProgram);
+    // void updateState(phyVector position, phyVector velocity, phyVector acceleration, double mass);
+    // void updateOrientation(const phyVector& x, const phyVector& y, const phyVector& z);
 };
 
 #endif // SIMOBJECT_HPP

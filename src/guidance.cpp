@@ -174,6 +174,15 @@ int sim3DOF() {
     vector<double> fuel_mass_history;
     vector<double> heading_history;
     vector<double> radial_velocity_history;
+    vector<double> body_x_x_history;
+    vector<double> body_x_y_history;
+    vector<double> body_x_z_history;
+    vector<double> body_y_x_history;
+    vector<double> body_y_y_history;
+    vector<double> body_y_z_history;
+    vector<double> body_z_x_history;
+    vector<double> body_z_y_history;
+    vector<double> body_z_z_history;
     std::ofstream altitude_file("csv/altitude_history.csv");
     std::ofstream velocity_file("csv/velocity_history.csv");
     std::ofstream apoapsis_file("csv/apoapsis_history.csv");
@@ -189,6 +198,9 @@ int sim3DOF() {
     std::ofstream fmass_file("csv/fmass_history.csv");
     std::ofstream heading_file("csv/heading_history.csv");
     std::ofstream radial_velocity_file("csv/radial_velocity_history.csv");
+    std::ofstream body_x_file("csv/body_x_history.csv");
+    std::ofstream body_y_file("csv/body_y_history.csv");
+    std::ofstream body_z_file("csv/body_z_history.csv");
     vector<double> r_x;//For plotting earth's surface
     vector<double> r_z;//For plotting earth's surface
     vector<double> r_y;//For plotting earth's surface
@@ -205,6 +217,12 @@ int sim3DOF() {
     phyVector incV;
     phyVector s;
     phyVector a_total;
+    phyVector body_x ,body_y,body_z;
+
+    sim1.getLocalFrame(&Xv,&Yv,&Zv);
+    body_x = Zv;
+    body_y = -Yv;
+    body_z = Xv;
 
     dt = sim1.getTimeStep();
     Mfo = sim1.getParam("Init_Fuel_Mass");
@@ -292,7 +310,7 @@ int sim3DOF() {
     v = sim1.getV();
     s = sim1.getS();
 
-    Quaternion cmd_q;
+    Quaternion cmd_q,cmd_q_conj;
     
     
     
@@ -369,6 +387,10 @@ int sim3DOF() {
         // sim1.updatePosition(commanded_pitch,heading_angle,isThrusting);
         sim1.updatePositionQuat(cmd_q,isThrusting);
 
+        body_x = cmd_q.rotateVector(phyVector(1, 0, 0)); // Rotate the local X-axis by the command quaternion
+        body_y = cmd_q.rotateVector(phyVector(0, 1, 0)); // Rotate the local Y-axis by the command quaternion
+        body_z = cmd_q.rotateVector(phyVector(0, 0, 1)); // Rotate the local Z-axis by the command quaternion
+
         v = sim1.getV();
         s = sim1.getS();
 
@@ -434,6 +456,16 @@ int sim3DOF() {
         s_x_history.push_back(s.x);
         s_z_history.push_back(s.z);
         s_y_history.push_back(s.y);
+
+        body_x_x_history.push_back(body_x.x);
+        body_x_y_history.push_back(body_x.y);
+        body_x_z_history.push_back(body_x.z);
+        body_y_x_history.push_back(body_y.x);
+        body_y_y_history.push_back(body_y.y);
+        body_y_z_history.push_back(body_y.z);
+        body_z_x_history.push_back(body_z.x);
+        body_z_y_history.push_back(body_z.y);
+        body_z_z_history.push_back(body_z.z);
     
     }
 
@@ -462,6 +494,9 @@ int sim3DOF() {
         fmass_file << time[i] << "," << fuel_mass_history[i] << endl;
         heading_file << time[i] << "," << heading_history[i] <<endl;
         radial_velocity_file << time[i] << "," << radial_velocity_history[i] << endl;
+        body_x_file << time[i] << "," << body_x_x_history[i] << "," << body_x_y_history[i] << "," << body_x_z_history[i] << endl;
+        body_y_file << time[i] << "," << body_y_x_history[i] << "," << body_y_y_history[i] << "," << body_y_z_history[i] << endl;
+        body_z_file << time[i] << "," << body_z_x_history[i] << "," << body_z_y_history[i] << "," << body_z_z_history[i] << endl;
     }
 
     std::cout<<"Finished Writing data to files" << endl;
@@ -483,6 +518,10 @@ int sim3DOF() {
     psi_file.close();
     fmass_file.close();
     heading_file.close();
+    radial_velocity_file.close();
+    body_x_file.close();
+    body_y_file.close();
+    body_z_file.close();
 
     return 0;
 }

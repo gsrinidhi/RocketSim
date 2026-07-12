@@ -13,7 +13,9 @@
 #include"phyVector.h"
 #include "quaternion.h"
 
+#ifndef PI
 #define PI 3.14159265358979323846
+#endif
 
 #define GRAVITATIONAL_CONSTANT 6.67430e-11
 

@@ -97,3 +97,12 @@ phyVector Quaternion::getRotationAxis() const {
     }
     return phyVector(q1 / sin_half_angle, q2 / sin_half_angle, q3 / sin_half_angle);
 }
+
+Quaternion::Quaternion(double angle, phyVector axis) {
+    double half_angle = angle / 2.0;
+    q0 = cos(half_angle);
+    double sin_half_angle = sin(half_angle);
+    q1 = axis.x * sin_half_angle;
+    q2 = axis.y * sin_half_angle;
+    q3 = axis.z * sin_half_angle;
+}

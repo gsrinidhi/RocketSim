@@ -37,7 +37,9 @@
 #include "simObject.hpp"
 #include "simBody.hpp"
 
+#ifndef PI
 #define PI 3.14159265358979323846
+#endif
 
 #define GRAVITATIONAL_CONSTANT 6.67430e-11
 
@@ -91,6 +93,12 @@ class phySim {
     int cycle_flag;
 
     CGuidance *g1;
+
+    phyVector camoffset,upVector,forwardVector,rightVector,camPos;
+
+    Quaternion cam_quat;
+
+    float camDistance;
     
 
     

@@ -101,6 +101,7 @@ int CGuidance::guidInitFile(std::string fname) {
     apoapsis_target = configMap["Apoapsis_Target"];
     periapsis_target = configMap["Periapsis_Target"];
     incV.setXYZ(sin(inclination) * sin(inertial_azimuth),sin(inclination)*cos(inertial_azimuth),cos(inclination));
+    return 0;
 }
 
 double CGuidance::getParam(std::string pname) {
@@ -119,6 +120,8 @@ int CGuidance::getHeading(phyVector s, phyVector Xv, double *commanded_heading) 
     }
 
     *commanded_heading = acos(kop);
+
+    return 0;
 }
 
 int CGuidance::getGuidanceOutput(phyVector s, phyVector v, double local_FPA,double time,double *commanded_pitch,int *isThrusting) {
@@ -199,6 +202,7 @@ int CGuidance::getGuidanceOutput(phyVector s, phyVector v, double local_FPA,doub
             //Mode 4: Coasting phase
             *isThrusting = 0; // Engine is off during coasting
         }
+    return 0;
 }
 
 int CGuidance::getGuidanceOutputQuat(phyVector s, phyVector v, double local_FPA,double time,double heading_angle,phyVector Xv, phyVector Yv,phyVector Zv,Quaternion &cmd_q,int *isThrusting) {
@@ -292,9 +296,11 @@ int CGuidance::getGuidanceOutputQuat(phyVector s, phyVector v, double local_FPA,
         cmd_z = -Zv * cos(commanded_pitch) + Xv * sin(commanded_pitch) *cos(commanded_heading) + Yv * sin(commanded_pitch) * sin(commanded_heading);
         cmd_y = cmd_z ^ cmd_x;
         cmd_q = Quaternion::getRotationQuaternion(cmd_x,cmd_y,cmd_z);
+    return 0;
 }
 
 double CGuidance::getApoapsisPeriapsis(double *apo, double *peri) {
     *apo = apoapsis_altitude;
     *peri = periapsis_altitude;
+    return 0;
 }

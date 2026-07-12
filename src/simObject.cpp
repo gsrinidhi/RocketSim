@@ -54,6 +54,8 @@ void SimObject::setBodyFrameAxes(const phyVector& x, const phyVector& y, const p
     this->body_x = x;
     this->body_y = y;
     this->body_z = z;
+    rot_angle = 0;
+    rot_axis.setXYZ(1,0,0);
 }
 
 void SimObject::initOpenGLBuffers() {
@@ -76,6 +78,8 @@ void SimObject::initOpenGLBuffers() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    drawLines = 0; // Default to not drawing lines
 }
 
 void SimObject::setLoc(int modelLoc, int viewLoc, int projectionLoc,int colorLoc,int offsetLoc) {
@@ -106,7 +110,18 @@ void SimObject::draw(const glm::mat4& view, const glm::mat4& projection, const g
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
 
+    if(this->drawLines) {
+        glUniform3f(colorLoc, 1.0, 1.0, 1.0); // Set line color to white
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glLineWidth(2.0f);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(indices.size()), GL_UNSIGNED_INT, 0);
+    }
+
     glBindVertexArray(0);
+}
+
+void SimObject::setDrawLines(int drawLines) {
+    this->drawLines = drawLines;
 }
 
 phyVector SimObject::getBodyFrameX() {
@@ -129,4 +144,40 @@ void SimObject::addVertex(float x, float y, float z) {
 
 void SimObject::addIndex(unsigned int index) {
     indices.push_back(index);
+}
+
+void SimObject::updateState(Quaternion cmd_q, phyVector acceleration,double dt,double scale,phyVector offset) {
+    // Update the orientation of the object based on the provided quaternion
+    body_x = cmd_q.rotateVector(phyVector(1, 0, 0));
+    body_y = cmd_q.rotateVector(phyVector(0, 1, 0));
+    body_z = cmd_q.rotateVector(phyVector(0, 0, 1));
+    velocity = velocity + acceleration * dt;
+    position = position + velocity * dt + offset;
+    rot_angle = cmd_q.getRotationAngle();
+    rot_axis = cmd_q.getRotationAxis();
+}
+
+void SimObject::updateState(Quaternion cmd_q, phyVector posRef,double dt,phyVector offset) {
+    // Update the orientation of the object based on the provided quaternion
+    body_x = cmd_q.rotateVector(phyVector(1, 0, 0));
+    body_y = cmd_q.rotateVector(phyVector(0, 1, 0));
+    body_z = cmd_q.rotateVector(phyVector(0, 0, 1));
+    velocity = (posRef + offset - position)/dt;
+    position = posRef + offset;
+    // velocity = velocity + acceleration * dt;
+    // position = position + velocity * dt + offset;
+    rot_angle = cmd_q.getRotationAngle();
+    rot_axis = cmd_q.getRotationAxis();
+}
+
+
+void SimObject::drawUsingState(double scale,const glm::mat4& view, const glm::mat4& projection, GLuint shaderProgram) {
+    glm::mat4 R = glm::mat4(1.0f);
+    // R[0] = glm::vec4(body_x.x,body_x.y,body_x.z,0.0f);
+    // R[1] = glm::vec4(body_y.x,body_y.y,body_y.z,0.0f);
+    // R[2] = glm::vec4(body_z.x,body_z.y,body_z.z,0.0f);
+    // R[3] = glm::vec4(position.x * scale, position.y * scale, position.z * scale,1.0f);
+    R = glm::translate(R, glm::vec3(position.x * scale, position.y * scale, position.z * scale));
+    R = glm::rotate(R, (float)rot_angle, glm::vec3(rot_axis.x,rot_axis.y,rot_axis.z));
+    draw(view,projection,R,shaderProgram);
 }

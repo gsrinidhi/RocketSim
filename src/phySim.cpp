@@ -346,9 +346,30 @@ void phySim::cursor_position_action(double xpos, double ypos) {
         return; // avoid jump
     }
 
-    dx = (xpos - lastX) * Re_scale;
-    dy = (ypos - lastY) * Re_scale;
-    glm::mat4 R;
+    // dx = (xpos - lastX) * Re_scale;
+    // dy = (ypos - lastY) * Re_scale;
+    dy = (ypos - lastY);
+    double theta = -dy * 0.01;
+    cam_quat = Quaternion(theta, rightVector);
+    forwardVector = cam_quat.rotateVector(forwardVector);
+    camPos = s * Re_scale + forwardVector * camDistance;
+    upVector = cam_quat.rotateVector(upVector);
+    // view = glm::lookAt(
+    //                 glm::vec3(camPos.x, camPos.y, camPos.z),
+    //                 glm::vec3(s.x * Re_scale, s.y * Re_scale, s.z * Re_scale),
+    //                 glm::vec3(upVector.x, upVector.y, upVector.z)
+    //             );
+    dx = (xpos - lastX);
+    theta = -dx * 0.01;
+    cam_quat = Quaternion(theta, upVector);
+    forwardVector = cam_quat.rotateVector(forwardVector);
+    camPos = s * Re_scale + forwardVector * camDistance;
+    rightVector = cam_quat.rotateVector(rightVector);
+    view = glm::lookAt(
+                    glm::vec3(camPos.x, camPos.y, camPos.z),
+                    glm::vec3(s.x * Re_scale, s.y * Re_scale, s.z * Re_scale),
+                    glm::vec3(upVector.x, upVector.y, upVector.z)
+                );
 
     // view = glm::rotate(view, (float)(dy * 0.01), right_vector);
     // R = glm::rotate(glm::mat4(1.0f), (float)(dy * 0.01), right_vector);
@@ -656,275 +677,7 @@ std::string phySim::readFile(const char* path)
 }
 
 int phySim::testGL() {
-    if (!glfwInit()) {
-        std::cout << "Failed to init GLFW\n";
-        return -1;
-    }
-
-    // Set OpenGL version (IMPORTANT)
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // Create window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Triangle", NULL, NULL);
-    if (!window) {
-        std::cout << "Failed to create window\n";
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window,frameBufferSizeCallBack);
-
-    // Initialize GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Failed to init GLAD\n";
-        return -1;
-    }
-
-    // Print OpenGL version
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-
-    // Triangle vertices
-    float vertices[] = {
-    // back face
-    -0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f,  0.5f, -0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-
-    // front face
-    -0.5f, -0.5f,  0.5f,
-     0.5f, -0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-    -0.5f, -0.5f,  0.5f,
-
-    // left face
-    -0.5f,  0.5f,  0.5f,
-    -0.5f,  0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f, -0.5f,
-    -0.5f, -0.5f,  0.5f,
-    -0.5f,  0.5f,  0.5f,
-
-    // right face
-     0.5f,  0.5f,  0.5f,
-     0.5f,  0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f, -0.5f,
-     0.5f, -0.5f,  0.5f,
-     0.5f,  0.5f,  0.5f,
-
-    // bottom face
-    // -0.5f, -0.5f, -0.5f,
-    //  0.5f, -0.5f, -0.5f,
-    //  0.5f, -0.5f,  0.5f,
-    //  0.5f, -0.5f,  0.5f,
-    // -0.5f, -0.5f,  0.5f,
-    // -0.5f, -0.5f, -0.5f,
-
-    // top face
-    // -0.5f,  0.5f, -0.5f,
-    //  0.5f,  0.5f, -0.5f,
-    //  0.5f,  0.5f,  0.5f,
-    //  0.5f,  0.5f,  0.5f,glm::rotate(model, angle, glm::vec3(0,0,1));
-    // -0.5f,  0.5f,  0.5f,
-    // -0.5f,  0.5f, -0.5f
-};
-
-    float vertices_line[] = {
-        //x axis
-        0.0,0.0,0.0,
-        1.0,0.0,0.0,
-        //y axis
-        0.0,0.0,0.0,
-        0.0,1.0,0.0,
-        //z axis
-        0.0,0.0,0.0,
-        0.0,0.0,1.0,
-
-
-    };
-
-    float dt = 0.1;
-    float time = 0;
-    float v = 0.5;
-    float w = 0.3;
-    float theta = 0;
-    float qx = 0,qy = 0,qz = 0,qw = 0;
-    float posx = 0,posy = 0,posz = 0;
-
-    
-    glm::mat4 model_axes = glm::mat4(1.0f); // identity (no rotation)
-    // model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-
-    view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f));
-
-    projection = glm::perspective(glm::radians(45.0f),(float)800 / 600, 0.1f,100.0f);
-
-    model = glm::mat4(1.0f);
-
-    glm::vec3 tr_offset = glm::vec3(0,0,0);
-
-    std::string vertexCode = readFile(R"(/home/srinidhi/Documents/Simulations/Testing/Project1/src/shaders/vertexShader.glsl)");
-
-    // Create buffers
-    unsigned int VAO, VBO,VAO2,VBO2;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glGenVertexArrays(1, &VAO2);
-    glGenBuffers(1, &VBO2);
-
-    // Bind VAO first
-    glBindVertexArray(VAO);
-
-    // Bind and fill VBO
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // Describe vertex layout
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(VAO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_line), vertices_line, GL_STATIC_DRAW);
-
-    // Describe vertex layout
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    
-
-    // Compile vertex shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    const char* vertexShaderSource = vertexCode.c_str();
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    // Compile fragment shader
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    // Link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    // Cleanup shaders (no longer needed after linking)
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    int quatLoc = glGetUniformLocation(shaderProgram, "quat");
-    int offset = glGetUniformLocation(shaderProgram, "offset");
-    int colorLoc = glGetUniformLocation(shaderProgram, "color");
-
-    int modelLoc = glGetUniformLocation(shaderProgram, "model");
-    int viewLoc  = glGetUniformLocation(shaderProgram, "view");
-    int projLoc  = glGetUniformLocation(shaderProgram, "projection");
-
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-
-    // glfwSetScrollCallback(window, scroll_callback);
-    // glfwSetMouseButtonCallback(window, mouse_button_callback);
-    // glfwSetCursorPosCallback(window, cursor_position_callback);
-
-    
-
-    // Render loop
-    while (!glfwWindowShouldClose(window))
-    {
-        // checkExitStatus(window,GLFW_KEY_ESCAPE);
-        // transformBody(window,&tr_offset,&view);
-
-        glClearColor(0,0,0,1);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // glUniform4f(quatLoc, qx, qy, qz, qw);
-        // glUniform3f(offset,posz,posy,posz);
-        
-
-        // glUseProgram(shaderProgram);
-        // glBindVertexArray(VAO);
-
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // glBindVertexArray(VAO2);
-
-        // glDrawArrays(GL_LINE_STRIP, 0, 5);
-
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        // glUniform3f(offset,tr_offset.x,tr_offset.y,tr_offset.z);
-
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        
-
-        // 1. Draw filled cube
-        glUniform3f(colorLoc,0.5,0.25,0.0);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // 2. Draw edges on top
-        glUniform3f(colorLoc,0.5,0.5,0.5);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glLineWidth(2.0f);
-
-        // Optional: make edges always visible
-        glDisable(GL_DEPTH_TEST);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glEnable(GL_DEPTH_TEST);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        glBindVertexArray(VAO2);
-        glUniform3f(offset,0,0,0);
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model_axes));
-        glUniform3f(colorLoc,1,0.25,0.0);
-        glLineWidth(2.0f);
-        glDisable(GL_DEPTH_TEST);
-        glDrawArrays(GL_LINES,0,6);
-        glEnable(GL_DEPTH_TEST);
-        time = time + dt;
-        theta = w*dt;
-
-        qw = cos(theta/2);
-        qz = sin(theta/2);
-
-        // posy = posy + v*dt;
-        // if(posy > 10) {
-        //     posy = -10;
-        // }
-        // model = glm::rotate(model, theta, glm::vec3(0.0f, 0.0f, 1.0f));
-        float angle = glfwGetTime();
-
-        // model = glm::translate(model, tr_offset);
-
-        // model = glm::mat4(1.0f);
-        // model = glm::rotate(model, angle, glm::vec3(0,0,1));
-        // model = glm::translate(model,glm::vec3(posx,posy,posz));
-
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    // Cleanup
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-
-    glfwTerminate();
+    return 0;
 }
 
 void phySim::simLoop() {
@@ -941,30 +694,32 @@ void phySim::simLoop() {
     rocket_height = 1000;
     SimBody rocket_body;
     SimObject rocket_cylinder,rocket_cone,earth,rocket_plume,fin1,fin2;
-    rocket_cylinder.setPosition(phyVector(s.x * Re_scale, s.y * Re_scale, s.z * Re_scale));
+    SimObject axis_x,axis_y,axis_z;
+    axis_x.setPosition(phyVector(0, 0, 0));
+    axis_y.setPosition(phyVector(0, 0, 0));
+    axis_z.setPosition(phyVector(0, 0, 0));
+
+    rocket_cylinder.setPosition(phyVector(s.x , s.y, s.z));
     rocket_cylinder.setBodyFrameAxes(Zv,-Yv,Xv);
-    rocket_cone.setPosition(phyVector((s.x + rocket_height) * Re_scale, s.y * Re_scale, s.z * Re_scale));
+    rocket_body.setPosition(phyVector(s.x , s.y, s.z));
+    rocket_body.setVelocity(phyVector(0,0,0));
+    rocket_cone.setPosition(phyVector((s.x + rocket_height) , s.y , s.z ));
     rocket_cone.setBodyFrameAxes(Zv,-Yv,Xv);
     earth.setPosition(phyVector(0, 0, 0));
     earth.setBodyFrameAxes(phyVector(1, 0, 0),phyVector(0, 1, 0),phyVector(0, 0, 1));
-    rocket_plume.setPosition(phyVector((s.x - rocket_height/15) * Re_scale, s.y * Re_scale, s.z * Re_scale));
+    rocket_plume.setPosition(phyVector((s.x - rocket_height/15) , s.y , s.z ));
     rocket_plume.setBodyFrameAxes(Zv,-Yv,Xv);
-    fin1.setPosition(phyVector(s.x * Re_scale, (s.y + rocket_radius*1.1) * Re_scale, s.z * Re_scale));
-    fin2.setPosition(phyVector(s.x * Re_scale, (s.y - rocket_radius*1.1) * Re_scale, s.z * Re_scale));
+    fin1.setPosition(phyVector(s.x , (s.y + rocket_radius*1.1) , s.z ));
+    fin2.setPosition(phyVector(s.x , (s.y - rocket_radius*1.1) , s.z ));
     fin1.setBodyFrameAxes(Zv,-Yv,Xv);
     fin2.setBodyFrameAxes(Zv,-Yv,Xv);
     populateSphereVertices(Re_scale * Re,&earth_vertices,&earth_indices);
     earth.setVerticesAndIndices(earth_vertices,earth_indices);
-    // populateCylinderVertices(rocket_radius * Re_scale,rocket_height * Re_scale,&rocket_vertices,&rocket_indices);
-    // populateSphereVertices(rocket_radius * Re_scale,&rocket_vertices,&rocket_indices);
     populateCylinderVertices(rocket_radius * Re_scale,rocket_height * Re_scale,&rocket_cylinder);
     populateConeVertices(rocket_radius * Re_scale,rocket_height/10 * Re_scale,&rocket_cone);
     populateConeVertices(rocket_radius * Re_scale,rocket_height/10 * Re_scale,&rocket_plume);
     populateConeVertices(rocket_radius/10 * Re_scale,rocket_height/10 * Re_scale,&fin1);
     populateConeVertices(rocket_radius/10 * Re_scale,rocket_height/10 * Re_scale,&fin2);
-
-    
-    // rocket.setVerticesAndIndices(rocket_vertices,rocket_indices);
     earth.setColor(0.0, 0.0, 1.0); // Blue color
     earth.initOpenGLBuffers();
     rocket_cylinder.setColor(1.0, 0.0, 0.0); // Red color
@@ -987,9 +742,8 @@ void phySim::simLoop() {
             << std::endl;
 
     glm::mat4 model_axes = glm::mat4(1.0f); // identity (no rotation)
-    // model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
 
-    float camDistance = 20.0f * rocket_radius * Re_scale;
+    camDistance = 20.0f * rocket_radius * Re_scale;
 
     glm::vec3 rocketPos(
         s.x * Re_scale,
@@ -998,8 +752,14 @@ void phySim::simLoop() {
     );
 
     // Camera position
+
+    camoffset = phyVector(0, camDistance, camDistance);
+    camPos = s + camoffset;
+    forwardVector = camoffset/camoffset.magnitude();
+    upVector.setXYZ(1, 0, 0);
+    rightVector = upVector ^ forwardVector;
     glm::vec3 cameraPos =
-        rocketPos + glm::vec3(0, camDistance, camDistance);
+        rocketPos + glm::vec3(camoffset.x, camoffset.y, camoffset.z);
 
     // Look at rocket
     view = glm::lookAt(
@@ -1027,57 +787,7 @@ void phySim::simLoop() {
 
     std::string vertexCode = readFile(R"(/home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/src/shaders/vertexShader.glsl)");
 
-    // glGenVertexArrays(1, &earth_vao);
-    // glGenBuffers(1, &earth_vbo);
-    // glGenBuffers(1, &earth_ebo);
-
-    // // glGenVertexArrays(1, &VAO2);
-    // // glGenBuffers(1, &VBO2);
-
-    // // Bind VAO first
-    // glBindVertexArray(earth_vao);
-
-    // // Bind and fill VBO
-    // glBindBuffer(GL_ARRAY_BUFFER, earth_vbo);
-    // glBufferData(GL_ARRAY_BUFFER, earth_vertices.size() * sizeof(float) , earth_vertices.data(), GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, earth_ebo);
-    // glBufferData(
-    //     GL_ELEMENT_ARRAY_BUFFER,
-    //     earth_indices.size() * sizeof(unsigned int),
-    //     earth_indices.data(),
-    //     GL_STATIC_DRAW
-    // );
-
-    // // Describe vertex layout
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
-
-    // glGenVertexArrays(1, &rocket_vao);
-    // glGenBuffers(1, &rocket_vbo);
-    // glGenBuffers(1, &rocket_ebo);
-
-    // // glGenVertexArrays(1, &VAO2);
-    // // glGenBuffers(1, &VBO2);
-
-    // // Bind VAO first
-    // glBindVertexArray(rocket_vao);
-
-    // // Bind and fill VBO
-    // glBindBuffer(GL_ARRAY_BUFFER, rocket_vbo);
-    // glBufferData(GL_ARRAY_BUFFER, rocket_vertices.size() * sizeof(float) , rocket_vertices.data(), GL_STATIC_DRAW);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rocket_ebo);
-    // glBufferData(
-    //     GL_ELEMENT_ARRAY_BUFFER,
-    //     rocket_indices.size() * sizeof(unsigned int),
-    //     rocket_indices.data(),
-    //     GL_STATIC_DRAW
-    // );
-
-    // // Describe vertex layout
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    // glEnableVertexAttribArray(0);
+    
 
     // Compile vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -1124,10 +834,10 @@ void phySim::simLoop() {
     // rocket_plume.setLoc(modelLoc,viewLoc,projLoc,colorLoc,offset);
 
     phyVector offset1(0, 0, 0);
-    phyVector offset2(rocket_height * Re_scale, 0, 0);
-    phyVector offset3(-rocket_height/15 * Re_scale, 0, 0);
-    phyVector offset4(0, rocket_radius * 1.1 * Re_scale, 0);
-    phyVector offset5(0, -rocket_radius * 1.1 * Re_scale, 0);
+    phyVector offset2(rocket_height , 0, 0);
+    phyVector offset3(-rocket_height/15 , 0, 0);
+    phyVector offset4(0, rocket_radius * 1.1 , 0);
+    phyVector offset5(0, -rocket_radius * 1.1 , 0);
     rocket_body.addObject(rocket_cylinder, offset1);
     rocket_body.addObject(rocket_cone, offset2);
     rocket_body.addObject(rocket_plume, offset3);
@@ -1143,7 +853,7 @@ void phySim::simLoop() {
         0
     );
 
-    double time_scale = 5;
+    double time_scale = 10;
 
     itimerspec timer{};
     timer.it_value.tv_sec = 0;
@@ -1191,7 +901,7 @@ void phySim::simLoop() {
 
     guidInit("input/Guid_Input_Params.txt");
 
-    sim_iter = 1;
+    sim_iter = 0;
 
     glm::mat4 R;
 
@@ -1205,12 +915,27 @@ void phySim::simLoop() {
     drawableFlags.push_back(1);
     drawableFlags.push_back(1);
     drawableFlags.push_back(1);
+    earth.setDrawLines(1);
+
+    
 
     while (!glfwWindowShouldClose(window))
     {
 
         checkSymStart(window,GLFW_KEY_S);
         checkSymStop(window,GLFW_KEY_P);
+        if(sim_iter == 0) {
+            glClearColor(0,0,0,1);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            glUseProgram(shaderProgram);
+            earth.draw(view,projection,model,shaderProgram);
+            // rocket_body.draw(view,projection,model_rocket,shaderProgram);
+            rocket_body.drawUsingState(Re_scale,view,projection,shaderProgram);
+            glfwSwapBuffers(window);
+            sim_iter += 1;
+            
+        }
         if(sim_run_flag == 1) {
             int n = epoll_wait(epfd,&event,1,0);
             if(n >= 1) {
@@ -1223,19 +948,22 @@ void phySim::simLoop() {
                 // updatePosition(commanded_pitch,heading_angle,isThrusting);
                 updatePositionQuat(cmd_q,isThrusting);
                 cmd_q_conj = cmd_q.conjugate();
-                rotate_angle = cmd_q_conj.getRotationAngle();
-                rot_axis = cmd_q_conj.getRotationAxis();
+                // rotate_angle = cmd_q_conj.getRotationAngle();
+                // rot_axis = cmd_q_conj.getRotationAxis();
+                rotate_angle = cmd_q.getRotationAngle();
+                rot_axis = cmd_q.getRotationAxis();
                 model_rocket = glm::mat4(1.0f);
                 
                 // model_rocket = glm::translate(model_rocket, glm::vec3(v.x * dt * Re_scale, v.y * dt * Re_scale, v.z * dt * Re_scale));
                 model_rocket = glm::translate(model_rocket, glm::vec3(s.x * Re_scale, s.y * Re_scale, s.z * Re_scale));
                 model_rocket = glm::rotate(model_rocket, (float)rotate_angle, glm::vec3(rot_axis.x,rot_axis.y,rot_axis.z));
+                camoffset = forwardVector * camDistance;
                 rocketPos = glm::vec3(s.x * Re_scale, s.y * Re_scale, s.z * Re_scale);
-                cameraPos = rocketPos + glm::vec3(0,camDistance,camDistance);
+                cameraPos = rocketPos + glm::vec3(camoffset.x,camoffset.y,camoffset.z);
                 view = glm::lookAt(
                     cameraPos,
                     rocketPos,
-                    glm::vec3(1.0f, 0.0f, 0.0f)
+                    glm::vec3(upVector.x, upVector.y, upVector.z)
                 );
                 if(isThrusting == 1) {
                     drawableFlags[2] = 1;
@@ -1243,12 +971,6 @@ void phySim::simLoop() {
                     drawableFlags[2] = 0;
                 }
                 rocket_body.updateDrawableFlags(drawableFlags);
-                // view = glm::rotate(view, (float)(dy * 0.01), right_vector);
-                // R = glm::rotate(glm::mat4(1.0f), (float)(dy * 0.01), right_vector);
-                // up_vector = glm::vec3(R * glm::vec4(up_vector, 1.0f));
-                // view = glm::rotate(view, (float)(dx * 0.01), up_vector);
-                // R = glm::rotate(glm::mat4(1.0f), (float)(dx * 0.01), up_vector);
-                // right_vector = glm::vec3(R * glm::vec4(right_vector, 1.0f));
                 sim_iter += 1;
                 std::cout<<"n = " << n << std::endl;
                 if(time > stop_time) {
@@ -1257,90 +979,26 @@ void phySim::simLoop() {
                 }
 
                 transformBody(window,&tr_offset,&view);
+                rocket_body.updateState(cmd_q,a,dt,Re_scale);
 
-                glClearColor(0,0,0,1);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-                glUseProgram(shaderProgram);
-                earth.draw(view,projection,model,shaderProgram);
-                // glBindVertexArray(earth_vao);
-                // // glUniform3f(offset,tr_offset.x,tr_offset.y,tr_offset.z);
-
-                // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-                // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-                // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-                
-
-                // // 1. Draw filled cube
-                // glUniform3f(colorLoc,0.5,0.25,0.0);
-                // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                // glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(earth_indices.size()),GL_UNSIGNED_INT,0);
-                // // glDrawArrays(GL_TRIANGLES, 0, 36);
-
-                // // 2. Draw edges on top
-                // glUniform3f(colorLoc,0.5,0.5,0.5);
-                // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-                // glLineWidth(2.0f);
-
-                // // Optional: make edges always visible
-                // glDisable(GL_DEPTH_TEST);
-
-                // glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(earth_indices.size()),GL_UNSIGNED_INT,0);
-                // // glDrawArrays(GL_TRIANGLES, 0, 36);
-                // // glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(earth_indices.size()),GL_UNSIGNED_INT,0);
-
-                // glEnable(GL_DEPTH_TEST);
-                // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-                // rocket.draw(view,projection,model_rocket,shaderProgram);
-                // phyVector cone_offset = rocket.getBodyFrameX() * rocket_height * Re_scale;
-                // model_rocket = glm::translate(model_rocket, glm::vec3(cone_offset.x,cone_offset.y,cone_offset.z));
-                // rocket_cone.draw(view,projection,model_rocket,shaderProgram);
-
-                rocket_body.draw(view,projection,model_rocket,shaderProgram);
-
-                glfwSwapBuffers(window);
                 
             }
         }
+
+        glClearColor(0,0,0,1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glUseProgram(shaderProgram);
+        earth.draw(view,projection,model,shaderProgram);
+
+        // rocket_body.draw(view,projection,model_rocket,shaderProgram);
+        
+        rocket_body.drawUsingState(Re_scale,view,projection,shaderProgram);
+
+        glfwSwapBuffers(window);
+                
         
         checkExitStatus(window,GLFW_KEY_ESCAPE);
-        // glClearColor(0,0,0,1);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // glUseProgram(shaderProgram);
-        // glBindVertexArray(earth_vao);
-        // // glUniform3f(offset,tr_offset.x,tr_offset.y,tr_offset.z);
-
-        // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        // glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(projection));
-        
-
-        // // 1. Draw filled cube
-        // glUniform3f(colorLoc,0.5,0.25,0.0);
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        // glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(earth_indices.size()),GL_UNSIGNED_INT,0);
-        // // glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        // // 2. Draw edges on top
-        // glUniform3f(colorLoc,0.5,0.5,0.5);
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        // glLineWidth(2.0f);
-
-        // // Optional: make edges always visible
-        // glDisable(GL_DEPTH_TEST);
-
-        // glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(earth_indices.size()),GL_UNSIGNED_INT,0);
-        // // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // // glDrawElements(GL_TRIANGLES,static_cast<GLsizei>(earth_indices.size()),GL_UNSIGNED_INT,0);
-
-        // glEnable(GL_DEPTH_TEST);
-        // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-        // rocket.draw(view,projection,model_rocket,shaderProgram);
-
-        // glfwSwapBuffers(window);
         
         glfwPollEvents();
     }

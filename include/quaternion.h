@@ -9,6 +9,7 @@ class Quaternion {
 public:
     Quaternion();
     Quaternion(double, double, double, double);
+    Quaternion(double angle, phyVector axis);
     // Add other member functions as needed
     // Function to add two quaternions
     Quaternion operator+(const Quaternion& other) const;

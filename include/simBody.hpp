@@ -9,6 +9,7 @@ class SimBody {
     std::vector<int> isDrawable; // Flags to indicate if each object should be drawn
     phyVector body_x, body_y, body_z; // Body frame axes
     phyVector offset;
+    phyVector s,v,a;
 public:
     SimBody();
     void addObject( SimObject& obj,  phyVector& offset);
@@ -17,6 +18,10 @@ public:
     void setLoc(int modelLoc, int viewLoc, int projectionLoc,int colorLoc,int offsetLoc);
     void setColor(double r, double g, double b);
     void updateDrawableFlags(const std::vector<int>& flags);
+    void updateState(Quaternion cmd_q, phyVector acceleration,double dt,double scale);
+    void drawUsingState(double scale,const glm::mat4& view, const glm::mat4& projection, GLuint shaderProgram);
+    void setPosition(phyVector s);
+    void setVelocity(phyVector v);
 };
 
 #endif // SIMBODY_HPP

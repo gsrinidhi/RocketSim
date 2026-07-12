@@ -8,7 +8,7 @@ Earth_Radius 6371000
 Earth_Mass 5.972e24
 Apoapsis_Target 500000
 Periapsis_Target 500000
-Stop_Time 8000
+Stop_Time 5000
 Init_Polar_Angle 90
 Init_Inertial_Azimuth 0
 Inclination 0

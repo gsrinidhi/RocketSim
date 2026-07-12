@@ -62,6 +62,16 @@ if __name__ == "__main__":
     s_y = np.loadtxt(project_dir + "/csv/s_y_history.csv", delimiter=',',usecols=1)
     s_z = np.loadtxt(project_dir + "/csv/s_z_history.csv", delimiter=',',usecols=1)
 
+    body_x_x = np.loadtxt(project_dir + "/csv/body_x_history.csv", delimiter=',',usecols=1)
+    body_x_y = np.loadtxt(project_dir + "/csv/body_x_history.csv", delimiter=',',usecols=2)
+    body_x_z = np.loadtxt(project_dir + "/csv/body_x_history.csv", delimiter=',',usecols=3)
+    body_y_x = np.loadtxt(project_dir + "/csv/body_y_history.csv", delimiter=',',usecols=1)
+    body_y_y = np.loadtxt(project_dir + "/csv/body_y_history.csv", delimiter=',',usecols=2)
+    body_y_z = np.loadtxt(project_dir + "/csv/body_y_history.csv", delimiter=',',usecols=3)
+    body_z_x = np.loadtxt(project_dir + "/csv/body_z_history.csv", delimiter=',',usecols=1)
+    body_z_y = np.loadtxt(project_dir + "/csv/body_z_history.csv", delimiter=',',usecols=2)
+    body_z_z = np.loadtxt(project_dir + "/csv/body_z_history.csv", delimiter=',',usecols=3)
+
     #Plot all the parameters using the plot_parameters function in different figures
     plot_parameters(time, [altitude], ['Altitude (m)'],"altitude_plot.png")
     plot_parameters(time, [velocity], ['Velocity (m/s)'],"velocity_plot.png")
@@ -75,6 +85,9 @@ if __name__ == "__main__":
     plot_parameters(time, [heading], ['heading (deg)'],"heading.png")
     plot_parameters(time, [s_x, s_y, s_z], ['s_x (m)', 's_y (m)', 's_z (m)'],"s_plot.png")
     plot_parameters(time, [radial_velocity], ['Radial Velocity (m/s)'],"radial_velocity.png")
+    plot_parameters(time, [body_x_x, body_x_y, body_x_z], ['Body X X (m)', 'Body X Y (m)', 'Body X Z (m)'],"body_x_plot.png")
+    plot_parameters(time, [body_y_x, body_y_y, body_y_z], ['Body Y X (m)', 'Body Y Y (m)', 'Body Y Z (m)'],"body_y_plot.png")
+    plot_parameters(time, [body_z_x, body_z_y, body_z_z], ['Body Z X (m)', 'Body Z Y (m)', 'Body Z Z (m)'],"body_z_plot.png")
 
     Re = 6371000 #Radius of Earth in meters
     #Plot the earths surface in 3d
