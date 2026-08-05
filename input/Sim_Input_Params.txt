@@ -1,15 +1,17 @@
-Timestep 0.1
-Init_Fuel_Mass 180000
-Init_Str_Mass 15000
-Payload_Mass 5000
-Isp 400
-Mass_Flow_Rate 800
-Earth_Radius 6371000
-Earth_Mass 5.972e24
-Apoapsis_Target 500000
-Periapsis_Target 500000
-Stop_Time 5000
-Init_Polar_Angle 90
-Init_Inertial_Azimuth 0
-Inclination 0
-Mode 1
+DOUBLE Timestep 0.1
+DOUBLE Init_Fuel_Mass 180000
+DOUBLE Init_Str_Mass 15000
+DOUBLE Payload_Mass 5000
+DOUBLE Isp 400
+DOUBLE Mass_Flow_Rate 800
+DOUBLE Earth_Radius 6371000
+DOUBLE Earth_Mass 5.972e24
+DOUBLE Apoapsis_Target 500000
+DOUBLE Periapsis_Target 500000
+DOUBLE Stop_Time 5000
+DOUBLE Init_Polar_Angle 90
+DOUBLE Init_Inertial_Azimuth 0
+DOUBLE Inclination 0
+STRING guidToSimFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simSpace/guidToSimFIFO
+STRING simToGuidFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simSpace/simToGuidFIFO
+DOUBLE Mode 1

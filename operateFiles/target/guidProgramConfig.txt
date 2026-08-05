@@ -1,0 +1,3 @@
+STRING guidToSimFName /home/srinidhi/inputFiles/guidToSimFIFO
+STRING simToGuidFName /home/srinidhi/inputFiles/simToGuidFIFO
+STRING guidInitFile /home/srinidhi/inputFiles/guidInputParams.txt

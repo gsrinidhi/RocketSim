@@ -75,13 +75,23 @@ int phySim::simInitFile(std::string fname) {
         }
 
         std::stringstream ss(line);
+        std::string ftype;
         std::string key;
+        std::string str_value;
         double value;
 
         // 3. Extract key and value separated by whitespace
-        if (ss >> key >> value) {
+        // if (ss >> key >> value) {
+        //     configMap[key] = value;
+        // }
+        ss >> ftype;
+        if(ftype == "DOUBLE") {
+            ss >> key >> value;
             configMap[key] = value;
-        }
+        } else if (ftype == "STRING"){
+            ss >> key >> str_value;
+            configMap_string[key] = str_value;
+        } 
     }
 
     // 4. Close the file stream
@@ -100,6 +110,25 @@ int phySim::simInitFile(std::string fname) {
     theta_init = configMap["Init_Inertial_Azimuth"] * PI / 180;
     inclination = configMap["Inclination"] * PI / 180;
     simMode = configMap["Mode"];
+
+    guidToSimFileName = configMap_string["guidToSimFName"];
+    simToGuidFileName = configMap_string["simToGuidFName"];
+
+    std::cout<<"In sim, Sim to guid fname = " << simToGuidFileName.data() << std::endl;
+    std::cout<<"In sim, guid to Sim fname = " << guidToSimFileName.data() << std::endl;
+
+    //convention: open guidToSim file in both simulator and guidance
+    guidToSim_fd = open(guidToSimFileName.data(),O_RDONLY);
+
+    simToGuid_fd = open(simToGuidFileName.data(),O_WRONLY | O_NONBLOCK);
+    if(simToGuid_fd == -1) {
+        std::cout << "Waiting for guidance to open simToGuid" << std::endl;
+    }
+
+    //try until reader opens
+    while(simToGuid_fd == -1) {
+        simToGuid_fd = open(simToGuidFileName.data(),O_WRONLY | O_NONBLOCK);
+    }
 
     mass = Mfo + Ms + Mp;
     Mf = Mfo;
@@ -140,11 +169,18 @@ void phySim::simInit(phyVector s, phyVector v) {
 }
 
 void phySim::guidInit(std::string gInitFile) {
-    g1->setEarthSpecs(Me,Re);
-    g1->setAltitudeThresholds(50e3,50e3);
-    g1->guidInitFile(gInitFile);
-    g1->setLogFile(logfile);
-    g1->guidInit(s,phi_init,theta_init,inclination);
+    simToGuid_Init_Packet.Me = Me;
+    simToGuid_Init_Packet.Re = Re;
+    simToGuid_Init_Packet.s = s;
+    simToGuid_Init_Packet.inclination = inclination;
+    simToGuid_Init_Packet.phi_init = phi_init;
+    simToGuid_Init_Packet.theta_init = theta_init;
+    write(simToGuid_fd,&simToGuid_Init_Packet,sizeof(simToGuidInitPkt));
+    // g1->setEarthSpecs(Me,Re);
+    // g1->setAltitudeThresholds(50e3,50e3);
+    // g1->guidInitFile(gInitFile);
+    // g1->setLogFile(logfile);
+    // g1->guidInit(s,phi_init,theta_init,inclination);
 }
 
 void phySim::updateLocalFrame(phyVector v,double *local_FPA) {
@@ -936,6 +972,9 @@ void phySim::simLoop() {
 
     double apogee =0,perigee = 0;
 
+    int write_status,read_status;
+    int read_bytes = 0;
+
     
 
     while (!glfwWindowShouldClose(window))
@@ -965,12 +1004,24 @@ void phySim::simLoop() {
                 std::cout<<"iter no = " << sim_iter << std::endl;
                 time = sim_iter * dt;
                 updateLocalFrame(v,&local_FPA);
-                g1->getHeading(s,Xv,&heading_angle);
+                makeSimToGuidPacket();
+                write(simToGuid_fd,&simToGuid_Packet,sizeof(simToGuidPkt));
+                read_bytes = read(guidToSim_fd,&guidToSim_Packet,sizeof(guidToSimPkt));
+                while(read_bytes == -1) {
+                    read_bytes = read(guidToSim_fd,&guidToSim_Packet,sizeof(guidToSimPkt));
+                }
+                std::cout<< "Read bytes = " << read_bytes << std::endl;
+                cmd_q = guidToSim_Packet.cmd_q;
+                isThrusting = guidToSim_Packet.isThrusting;
+                apogee = guidToSim_Packet.apogee;
+                perigee = guidToSim_Packet.perigee;
+
+                // g1->getHeading(s,Xv,&heading_angle);
                 // g1->getGuidanceOutput(s,v,local_FPA,time,&commanded_pitch,&isThrusting);
-                g1->getGuidanceOutputQuat(s,v,local_FPA,time,heading_angle,Xv,Yv,Zv,cmd_q,&isThrusting);
+                // g1->getGuidanceOutputQuat(s,v,local_FPA,time,heading_angle,Xv,Yv,Zv,cmd_q,&isThrusting);
                 // updatePosition(commanded_pitch,heading_angle,isThrusting);
                 updatePositionQuat(cmd_q,isThrusting);
-                g1->getApoapsisPeriapsis(&apogee,&perigee);
+                // g1->getApoapsisPeriapsis(&apogee,&perigee);
                 cmd_q_conj = cmd_q.conjugate();
                 // rotate_angle = cmd_q_conj.getRotationAngle();
                 // rot_axis = cmd_q_conj.getRotationAxis();
@@ -996,7 +1047,7 @@ void phySim::simLoop() {
                 }
                 rocket_body.updateDrawableFlags(drawableFlags);
                 sim_iter += 1;
-                std::cout<<"n = " << n << std::endl;
+                // std::cout<<"n = " << n << std::endl;
                 if(time > stop_time) {
                     std::cout<<"Finished simulation " << std::endl;
                     break;
@@ -1048,6 +1099,9 @@ void phySim::simLoop() {
         glfwPollEvents();
     }
 
+    // close(simToGuid_fd);
+    // close(guidToSim_fd);
+
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -1059,4 +1113,14 @@ void phySim::simLoop() {
 
     glfwTerminate();
 
+}
+
+void phySim::makeSimToGuidPacket() {
+    simToGuid_Packet.s = s;
+    simToGuid_Packet.v = v;
+    simToGuid_Packet.time = time;
+    simToGuid_Packet.Xv = Xv;
+    simToGuid_Packet.Yv = Yv;
+    simToGuid_Packet.Zv = Zv;
+    simToGuid_Packet.local_FPA = local_FPA;
 }

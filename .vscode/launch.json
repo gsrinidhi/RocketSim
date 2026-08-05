@@ -10,6 +10,23 @@
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build",
             "MIMode": "gdb"
+        },
+        {
+            "name": "Run guidProgram",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/guidProgram",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
+            "MIMode": "gdb"
+        }
+    ],
+    "compounds": [
+        {
+        "name": "Debug Both C++ Programs",
+        "configurations": ["Run program", "Run guidProgram"],
+        "stopAll": true
         }
     ],
     "environment": [

@@ -1,0 +1,3 @@
+STRING guidToSimFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidSpace/guidToSimFIFO
+STRING simToGuidFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidSpace/simToGuidFIFO
+STRING server_addr 127.0.0.1

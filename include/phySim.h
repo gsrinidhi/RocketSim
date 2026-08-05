@@ -35,11 +35,13 @@
 #include <sys/epoll.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "cguidance.h"
 #include "quaternion.h"
 #include "simObject.hpp"
 #include "simBody.hpp"
+#include "interface.h"
 
 #ifndef PI
 #define PI 3.14159265358979323846
@@ -75,6 +77,7 @@ class phySim {
     phyVector Xv,Yv,Zv;
     phyVector s,v,a;
     std::map<std::string, double> configMap;
+    std::map<std::string, std::string> configMap_string;
     std::ofstream *logfile;
 
     GLFWwindow* window;
@@ -107,6 +110,14 @@ class phySim {
     double windowHeight,windowWidth;
 
     int simMode;
+
+    std::string guidToSimFileName,simToGuidFileName;
+
+    guidToSimPkt guidToSim_Packet;
+    simToGuidPkt simToGuid_Packet;
+    simToGuidInitPkt simToGuid_Init_Packet;
+
+    int simToGuid_fd,guidToSim_fd;
     
 
     
@@ -146,6 +157,8 @@ public:
     void setGuidObj(CGuidance *g);
     void checkSymStart(GLFWwindow* window,int key);
     void checkSymStop(GLFWwindow* window,int key);
+
+    void makeSimToGuidPacket();
 
 
 };
