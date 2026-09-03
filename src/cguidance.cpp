@@ -56,6 +56,10 @@ void CGuidance::setLogFile(std::ofstream *file) {
     logfile = file;
 }
 
+void CGuidance::setDataLogFile(std::ofstream *file) {
+    dataLogFile = file;
+}
+
 void CGuidance::guidInit(phyVector s, double polar_angle,double inertial_azimuth,double inclination) {
     incV.setXYZ(sin(inclination) * sin(inertial_azimuth),sin(inclination)*cos(inertial_azimuth),cos(inclination));
 }
@@ -207,6 +211,11 @@ int CGuidance::getGuidanceOutput(phyVector s, phyVector v, double local_FPA,doub
 
 int CGuidance::getGuidanceOutputQuat(phyVector s, phyVector v, double local_FPA,double time,double heading_angle,phyVector Xv, phyVector Yv,phyVector Zv,Quaternion &cmd_q,int *isThrusting) {
     altitude = s.magnitude() - Re;
+    if(altitude < 0) {
+        altitude = 0;
+    }
+    *dataLogFile << time << "," << altitude << "," << s.x << "," << s.y << "," << s.z << "," << v.x << "," << v.y << "," << v.z << "," << local_FPA << "," << heading_angle << "," << Xv.x << "," << Xv.y << "," << Xv.z << "," << Yv.x << "," << Yv.y << "," << Yv.z << "," << Zv.x << "," << Zv.y << "," << Zv.z << "," << std::endl; 
+    
     getApoapsisPeriapsis(s, v, Me, Re, apoapsis_altitude, periapsis_altitude);
     double commanded_pitch = 0, commanded_heading = heading_angle;
         if(mode == 1) {
@@ -303,4 +312,39 @@ double CGuidance::getApoapsisPeriapsis(double *apo, double *peri) {
     *apo = apoapsis_altitude;
     *peri = periapsis_altitude;
     return 0;
+}
+
+void CGuidance::guidInit(guidInitPkt guidInitPacket) {
+    setEarthSpecs(guidInitPacket.Me,guidInitPacket.Re);
+    guidInit(guidInitPacket.s,guidInitPacket.phi_init,guidInitPacket.theta_init,guidInitPacket.inclination);
+    polar_angle = guidInitPacket.polar_angle * PI/180;
+    inertial_azimuth = guidInitPacket.inertial_azimuth * PI/180;
+    inclination = guidInitPacket.inclination * PI/180;
+    tower_clearance_altitude = guidInitPacket.tower_clearance_altitude;
+    mode_1_2_change_altitude = guidInitPacket.mode_1_2_change_altitude;
+    mode_2_3_change_altitude = guidInitPacket.mode_2_3_change_altitude;
+    mode_2_pitch = guidInitPacket.mode_2_pitch * PI / 180;
+    apoapsis_target = guidInitPacket.apoapsis_target;
+    periapsis_target = guidInitPacket.periapsis_target;
+    // std::cout << "Opening log file" << std::endl;
+    // dataLogFile.open(guidInitPacket.dataLogFile);
+    // std::cout << "Opened log file" << std::endl;
+    incV.setXYZ(sin(inclination) * sin(inertial_azimuth),sin(inclination)*cos(inertial_azimuth),cos(inclination));
+
+    // polar_angle = configMap["Init_Polar_Angle"] * PI/180;
+    // inertial_azimuth = configMap["Init_Inertial_Azimuth"] * PI /180;
+    // inclination = configMap["Inclination"] * PI / 180;
+    // tower_clearance_altitude = configMap["Tower_Clearance_Altitude"];
+    // mode_1_2_change_altitude = configMap["Alt_1_2"];
+    // mode_2_3_change_altitude = configMap["Alt_2_3"];
+    // mode_2_pitch = configMap["Mode_2_Pitch"] * PI / 180;
+    // apoapsis_target = configMap["Apoapsis_Target"];
+    // periapsis_target = configMap["Periapsis_Target"];
+    // incV.setXYZ(sin(inclination) * sin(inertial_azimuth),sin(inclination)*cos(inertial_azimuth),cos(inclination));
+
+
+}
+
+CGuidance::~CGuidance() {
+    // dataLogFile.close();
 }

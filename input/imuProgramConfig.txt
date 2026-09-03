@@ -1,0 +1,2 @@
+STRING imuInputFileName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simToIMUFIFO
+STRING imuOutputFileName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/imuToNavFIFO

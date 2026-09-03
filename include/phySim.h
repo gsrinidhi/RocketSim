@@ -79,6 +79,8 @@ class phySim {
     std::map<std::string, double> configMap;
     std::map<std::string, std::string> configMap_string;
     std::ofstream *logfile;
+    std::ofstream imuFile;
+    std::string imuFileName;
 
     GLFWwindow* window;
     glm::mat4 projection;
@@ -113,11 +115,17 @@ class phySim {
 
     std::string guidToSimFileName,simToGuidFileName;
 
-    guidToSimPkt guidToSim_Packet;
-    simToGuidPkt simToGuid_Packet;
-    simToGuidInitPkt simToGuid_Init_Packet;
+    // guidToSimPkt guidToSim_Packet;
+    universalPkt guidToSim_Packet;
+    // simToGuidPkt simToGuid_Packet;
+    universalPkt simToGuid_Packet;
+    guidInitPkt simToGuid_Init_Packet;
+    // navInitPkt simToNav_Init_Packet;
+    // imuInputPkt simToNav_Packet;
+    // imuInputPkt imuPkt;
+    universalPkt imuPkt;
 
-    int simToGuid_fd,guidToSim_fd;
+    int simToGuid_fd,guidToSim_fd,imu_fd;
     
 
     
@@ -152,13 +160,18 @@ public:
     void populateCylinderVertices(double radius,double height,std::vector<float> *vertices,std::vector<unsigned int> *indices);
     void populateCylinderVertices(double radius, double height, SimObject *obj);
     void populateConeVertices(double radius, double height, SimObject *obj);
+    void populateCuboidVertices(double width, double height, double depth, SimObject *obj);
     int testGL();
     void guidInit(std::string gInitFile);
+    void navInit(Quaternion cmd_q);
     void setGuidObj(CGuidance *g);
     void checkSymStart(GLFWwindow* window,int key);
     void checkSymStop(GLFWwindow* window,int key);
 
     void makeSimToGuidPacket();
+    void makeImuPacket(Quaternion cmd_q);
+
+    void imuInit();
 
 
 };

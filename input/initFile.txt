@@ -1,0 +1,15 @@
+DOUBLE Apoapsis_Target 500000
+DOUBLE Periapsis_Target 500000
+DOUBLE Stop_Time 5000
+DOUBLE Tower_Clearance_Altitude 500
+DOUBLE Alt_1_2 1000
+DOUBLE Alt_2_3 10500
+DOUBLE Mode_2_Pitch 60
+DOUBLE Init_Polar_Angle 90
+DOUBLE Init_Inertial_Azimuth 0
+DOUBLE Inclination 0
+DOUBLE Re 6371000
+DOUBLE Me 5.972e24
+STRING navInitFIFO /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/navInitFIFO
+STRING guidInitFIFO /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidInitFIFO
+STRING dataLogFile /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidDataLogFile.txt

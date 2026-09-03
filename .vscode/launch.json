@@ -20,12 +20,47 @@
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build",
             "MIMode": "gdb"
+        },
+        {
+            "name": "Run imu Program",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/imuProgram",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
+            "MIMode": "gdb"
+        },
+        {
+            "name": "Run nav Program",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/navProgram",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
+            "MIMode": "gdb"
+        },
+        {
+            "name": "Run init Program",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/initFileLoader",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
+            "MIMode": "gdb"
         }
     ],
     "compounds": [
         {
-        "name": "Debug Both C++ Programs",
-        "configurations": ["Run program", "Run guidProgram"],
+        "name": "Debug Simulation",
+        "configurations": ["Run program", "Run imu Program","Run nav Program", "Run guidProgram", "Run init Program"],
+        "stopAll": true
+        },
+        {
+        "name": "Debug Simulation only phySim and guidProgram",
+        "configurations": ["Run program", "Run nav Program", "Run guidProgram", "Run init Program"],
         "stopAll": true
         }
     ],

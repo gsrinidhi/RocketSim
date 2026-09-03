@@ -6,13 +6,15 @@
 class SimBody {
     std::vector<SimObject> objects;
     std::vector<phyVector> offset_positions; // Offset positions for each object
+    std::vector<Quaternion> orientations; // Orientations for each object
     std::vector<int> isDrawable; // Flags to indicate if each object should be drawn
     phyVector body_x, body_y, body_z; // Body frame axes
     phyVector offset;
     phyVector s,v,a;
+    // imuInputPkt imuInput;
 public:
     SimBody();
-    void addObject( SimObject& obj,  phyVector& offset);
+    void addObject( SimObject& obj,  phyVector& offset, Quaternion orientation);
     void setBodyFrameAxes(const phyVector& x, const phyVector& y, const phyVector& z);
     void draw(const glm::mat4& view, const glm::mat4& projection, const glm::mat4& model, GLuint shaderProgram);
     void setLoc(int modelLoc, int viewLoc, int projectionLoc,int colorLoc,int offsetLoc);
@@ -24,6 +26,9 @@ public:
     void setVelocity(phyVector v);
     void rotateAlongBodyAxis(int axis,double angle);
     void getBodyAxes(phyVector *x,phyVector *y, phyVector *z);
+    // void getRotationRates(Quaternion *cmd_q, double time,double *roll_rate, double *pitch_rate, double *yaw_rate);
+    // void getAcceleration(double *ax,double *ay,double *az);
+    // void iterateFunction(void *args);
 };
 
 #endif // SIMBODY_HPP

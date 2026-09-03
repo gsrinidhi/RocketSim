@@ -181,3 +181,8 @@ void SimObject::drawUsingState(double scale,const glm::mat4& view, const glm::ma
     R = glm::rotate(R, (float)rot_angle, glm::vec3(rot_axis.x,rot_axis.y,rot_axis.z));
     draw(view,projection,R,shaderProgram);
 }
+
+void SimObject::iterateFunction(void *args) {
+    // Placeholder for the iterate function implementation
+    // This function can be used to perform iterative updates or calculations on the SimObject
+}

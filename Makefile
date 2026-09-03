@@ -22,11 +22,17 @@ TARGET = $(BUILD_DIR)/main
 
 TARGET_GUID_PROGRAM = $(BUILD_DIR)/guidProgram
 
+TARGET_NAV_PROGRAM = $(BUILD_DIR)/navProgram
+
+TARGET_IMU_PROGRAM = $(BUILD_DIR)/imuProgram
+
 TARGET_ONBOARD_CLIENT = $(BUILD_NETWORK_DIR)/onboardClient
 
 TARGET_SIM_SERVER = $(BUILD_NETWORK_DIR)/simServer
 
-all: $(TARGET) $(TARGET_GUID_PROGRAM) $(TARGET_ONBOARD_CLIENT) $(TARGET_SIM_SERVER)
+TARGET_INIT_LOADER = $(BUILD_DIR)/initFileLoader
+
+all: $(TARGET) $(TARGET_GUID_PROGRAM) $(TARGET_ONBOARD_CLIENT) $(TARGET_SIM_SERVER) $(TARGET_NAV_PROGRAM) $(TARGET_IMU_PROGRAM) $(TARGET_INIT_LOADER)
 
 onboard: $(TARGET_ONBOARD_CLIENT) $(TARGET_GUID_PROGRAM)
 
@@ -40,6 +46,15 @@ $(TARGET): $(BUILD_DIR)/phyVector.o $(BUILD_DIR)/guidance.o $(BUILD_DIR)/cguidan
 	$(COMPILER) $^  -o $@ $(LDFLAGS)
 
 $(TARGET_GUID_PROGRAM): $(BUILD_DIR)/phyVector.o $(BUILD_DIR)/cguidance.o $(BUILD_DIR)/quaternion.o $(BUILD_DIR)/guidProgram.o 
+	$(COMPILER) $^  -g -o $@ $(LDFLAGS)
+
+$(TARGET_NAV_PROGRAM): $(BUILD_DIR)/phyVector.o $(BUILD_DIR)/navigation.o $(BUILD_DIR)/quaternion.o $(BUILD_DIR)/navProgram.o 
+	$(COMPILER) $^  -o $@ $(LDFLAGS)
+
+$(TARGET_IMU_PROGRAM): $(BUILD_DIR)/phyVector.o $(BUILD_DIR)/imuClass.o $(BUILD_DIR)/quaternion.o $(BUILD_DIR)/imuProgram.o 
+	$(COMPILER) $^  -o $@ $(LDFLAGS)
+
+$(TARGET_INIT_LOADER): $(BUILD_DIR)/initFileLoader.o $(BUILD_DIR)/phyVector.o $(BUILD_DIR)/quaternion.o
 	$(COMPILER) $^  -o $@ $(LDFLAGS)
 
 $(BUILD_DIR)/phyVector.o: $(SRC_DIR)/phyVector.cpp | $(BUILD_DIR)
@@ -49,7 +64,7 @@ $(BUILD_DIR)/guidance.o: $(SRC_DIR)/guidance.cpp | $(BUILD_DIR)
 	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
 
 $(BUILD_DIR)/cguidance.o: $(SRC_DIR)/cguidance.cpp | $(BUILD_DIR)
-	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+	$(COMPILER) -c -g $< $(CXXFLAGS) -o $@ 
 
 $(BUILD_DIR)/phySim.o: $(SRC_DIR)/phySim.cpp | $(BUILD_DIR)
 	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
@@ -91,6 +106,21 @@ $(BUILD_DIR)/imgui_impl_opengl3.o: $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp 
 	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
 
 $(BUILD_DIR)/guidProgram.o : $(SRC_DIR)/guidProgram.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/navigation.o : $(SRC_DIR)/navigation.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/navProgram.o : $(SRC_DIR)/navProgram.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/imuClass.o : $(SRC_DIR)/imuClass.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/imuProgram.o : $(SRC_DIR)/imuProgram.cpp | $(BUILD_DIR)
+	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
+
+$(BUILD_DIR)/initFileLoader.o : $(SRC_DIR)/initFileLoader.cpp | $(BUILD_DIR)
 	$(COMPILER) -c $< $(CXXFLAGS) -o $@ 
 
 $(BUILD_NETWORK_DIR)/onboardClient.o: $(SRC_DIR)/network/onboardClient.cpp | $(BUILD_NETWORK_DIR)

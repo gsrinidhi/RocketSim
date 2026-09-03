@@ -12,6 +12,7 @@ DOUBLE Stop_Time 5000
 DOUBLE Init_Polar_Angle 90
 DOUBLE Init_Inertial_Azimuth 0
 DOUBLE Inclination 0
-STRING guidToSimFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simSpace/guidToSimFIFO
-STRING simToGuidFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simSpace/simToGuidFIFO
+STRING guidToSimFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidToSimFIFO
+STRING simToGuidFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simToGuidFIFO
 DOUBLE Mode 1
+STRING imuFileName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simToGuidFIFO

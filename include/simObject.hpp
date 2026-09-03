@@ -52,6 +52,7 @@ class SimObject {
     void updateState(Quaternion cmd_q, phyVector acceleration,double dt,double scale,phyVector offset);
     void updateState(Quaternion cmd_q, phyVector posRef,double dt,phyVector offset);
     void drawUsingState(double scale,const glm::mat4& view, const glm::mat4& projection, GLuint shaderProgram);
+    void iterateFunction(void *args);
     // void updateState(phyVector position, phyVector velocity, phyVector acceleration, double mass);
     // void updateOrientation(const phyVector& x, const phyVector& y, const phyVector& z);
 };

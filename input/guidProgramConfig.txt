@@ -1,3 +1,3 @@
-STRING guidToSimFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidSpace/guidToSimFIFO
-STRING simToGuidFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidSpace/simToGuidFIFO
-STRING guidInitFile input/Guid_Input_Params.txt
+STRING guidToSimFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidToSimFIFO
+STRING navToGuidFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/simToGuidFIFO
+STRING guidInitFile /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/guidInitFIFO

@@ -18,13 +18,21 @@ void handle_sigint(int sig) {
 
 int main(int argc, char* argv[]) {
     CGuidance g1;
-    simToGuidInitPkt simToGuid_Init_Packet;
-    simToGuidPkt simToGuid_Packet;
-    guidToSimPkt guidToSim_Packet;
+    guidInitPkt guidInitPacket;
+    // navToGuidPkt navToGuid_Packet;
+    universalPkt navToGuid_Packet;
+    // simToGuidPkt simToGuid_Packet;
+    universalPkt simToGuid_Packet;
+    // guidToSimPkt guidToSim_Packet;
+    universalPkt guidToSim_Packet;
 
     std::map<std::string, std::string> configMap_string;
 
     std::string configFile;
+
+    std::string navToGuidFName;
+
+    int read_bytes = 0,write_bytes = 0;
 
     if(argc > 1) {
         configFile = argv[1];
@@ -38,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     std::string guidInitFile = "input/Guid_Input_Params.txt";
 
-    int simToGuid_fd,guidToSim_fd;
+    int simToGuid_fd,guidToSim_fd,guidInit_fd,navToGuid_fd;
 
     struct sigaction sa;
 
@@ -78,7 +86,7 @@ int main(int argc, char* argv[]) {
     // 4. Close the file stream
     file.close();
 
-    simToGuidFName = configMap_string["simToGuidFName"];
+    navToGuidFName = configMap_string["navToGuidFName"];
     guidToSimFName = configMap_string["guidToSimFName"];
     guidInitFile = configMap_string["guidInitFile"];
 
@@ -106,13 +114,26 @@ int main(int argc, char* argv[]) {
     // 3. Convert to local time structure
     std::tm* localTime = std::localtime(&currentTime);
 
-    std::ostringstream logfilename;
+    std::ostringstream logfilename,dataLogFileName;
     logfilename <<"logs/"<< std::put_time(localTime, "%Y_%m_%d_%H_%M_%S")
              << "_guidLog.txt";
 
-    std::cout<< "Log file name = " << logfilename.str() << std::endl;
+    dataLogFileName <<"logs/"<< std::put_time(localTime, "%Y_%m_%d_%H_%M_%S")
+             << "_guidDataLog.txt";
 
-    std::ofstream logfile(logfilename.str());
+    std::cout<< "Log file name = " << logfilename.str() << std::endl;
+    std::cout<< "Data Log file name = " << dataLogFileName.str() << std::endl;
+
+    std::ofstream logfile(logfilename.str()),datalogFile(dataLogFileName.str());
+
+    guidInit_fd = open(guidInitFile.data(),O_RDONLY);
+
+    //read from guidInit FIFO
+    while(read_bytes < sizeof(guidInitPkt)) {
+        read_bytes += read(guidInit_fd,&guidInitPacket,sizeof(guidInitPkt));
+    }
+
+    close(guidInit_fd);
 
     //open guidToSim file in both simulator and guidance
     guidToSim_fd = open(guidToSimFName.data(),O_WRONLY | O_NONBLOCK);
@@ -124,13 +145,14 @@ int main(int argc, char* argv[]) {
         guidToSim_fd = open(guidToSimFName.data(),O_WRONLY | O_NONBLOCK);
     }
 
-    simToGuid_fd = open(simToGuidFName.data(),O_RDONLY);
+    // simToGuid_fd = open(simToGuidFName.data(),O_RDONLY);
+    navToGuid_fd = open(navToGuidFName.data(),O_RDONLY);
 
     //read init packet
 
-    while(read(simToGuid_fd,&simToGuid_Init_Packet,sizeof(simToGuidInitPkt)) == -1) {
+    // while(read(simToGuid_fd,&simToGuid_Init_Packet,sizeof(simToGuidInitPkt)) == -1) {
 
-    }
+    // }
     // std::cout<< "Init parameters received" << std::endl;
     // std::cout << "Mass of earth: " << simToGuid_Init_Packet.Me << std::endl;
     // std::cout << "Radius of earth: " << simToGuid_Init_Packet.Re << std::endl;
@@ -140,36 +162,45 @@ int main(int argc, char* argv[]) {
     // std::cout << "Inclination: " << simToGuid_Init_Packet.inclination << std::endl;
 
 
-    g1.setEarthSpecs(simToGuid_Init_Packet.Me,simToGuid_Init_Packet.Re);
+    // g1.setEarthSpecs(simToGuid_Init_Packet.Me,simToGuid_Init_Packet.Re);
+    g1.guidInit(guidInitPacket);
     g1.setAltitudeThresholds(50e3,50e3);
-    g1.guidInitFile(guidInitFile);
+    // g1.guidInitFile(guidInitFile);
     g1.setLogFile(&logfile);
-    g1.guidInit(simToGuid_Init_Packet.s,simToGuid_Init_Packet.phi_init,simToGuid_Init_Packet.theta_init,simToGuid_Init_Packet.inclination);
+    g1.setDataLogFile(&datalogFile);
+    // g1.guidInit(simToGuid_Init_Packet.s,simToGuid_Init_Packet.phi_init,simToGuid_Init_Packet.theta_init,simToGuid_Init_Packet.inclination);
 
-    int read_bytes = 0,write_bytes = 0;
+    
 
     
     while(keep_running) {
         //read from simulator
-        read_bytes = read(simToGuid_fd,&simToGuid_Packet,sizeof(simToGuidPkt));
+        read_bytes = read(navToGuid_fd,&navToGuid_Packet,sizeof(universalPkt));
         while(read_bytes == -1) {
-            read_bytes = read(simToGuid_fd,&simToGuid_Packet,sizeof(simToGuidPkt));
+            read_bytes = read(navToGuid_fd,&navToGuid_Packet,sizeof(universalPkt));
             // std::cout<< "Read bytes = " << read_bytes << std::endl;
         }
         std::cout<< "Read bytes = " << read_bytes << std::endl;
         g1.getHeading(simToGuid_Packet.s,simToGuid_Packet.Xv,&guidToSim_Packet.heading_angle);
         simToGuid_Packet.heading_angle = guidToSim_Packet.heading_angle;
+        simToGuid_Packet.Xv = navToGuid_Packet.Xv;
+        simToGuid_Packet.Yv = navToGuid_Packet.Yv;
+        simToGuid_Packet.Zv = navToGuid_Packet.Zv;
+        simToGuid_Packet.s = navToGuid_Packet.s;
+        simToGuid_Packet.v = navToGuid_Packet.v;
+        simToGuid_Packet.local_FPA = navToGuid_Packet.local_FPA;
+        simToGuid_Packet.time = navToGuid_Packet.time;
         g1.getGuidanceOutputQuat(simToGuid_Packet.s,simToGuid_Packet.v,simToGuid_Packet.local_FPA,simToGuid_Packet.time,simToGuid_Packet.heading_angle,simToGuid_Packet.Xv,simToGuid_Packet.Yv,simToGuid_Packet.Zv,(guidToSim_Packet.cmd_q),&guidToSim_Packet.isThrusting);
         g1.getApoapsisPeriapsis(&guidToSim_Packet.apogee,&guidToSim_Packet.perigee);
-        write_bytes = write(guidToSim_fd,&guidToSim_Packet,sizeof(guidToSimPkt));
+        write_bytes = write(guidToSim_fd,&guidToSim_Packet,sizeof(universalPkt));
         // if(write_bytes == -1) {
         //     std::cout << "Write fifo closed" << std::endl;
         //     keep_running = 0;
         // }
     }
 
-    // close(simToGuid_fd);
-    // close(guidToSim_fd);
+    close(navToGuid_fd);
+    close(guidToSim_fd);
 
 
     

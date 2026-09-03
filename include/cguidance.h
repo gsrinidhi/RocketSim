@@ -12,12 +12,15 @@
 
 #include"phyVector.h"
 #include "quaternion.h"
+#include "interface.h"
 
 #ifndef PI
 #define PI 3.14159265358979323846
 #endif
 
+#ifndef GRAVITATIONAL_CONSTANT
 #define GRAVITATIONAL_CONSTANT 6.67430e-11
+#endif
 
 class CGuidance {
     int mode;
@@ -38,6 +41,7 @@ class CGuidance {
     phyVector incV,hv;
     phyVector cmd_x,cmd_y,cmd_z;
     std::ofstream *logfile;
+    std::ofstream *dataLogFile;
 public:
     
     CGuidance();
@@ -57,7 +61,9 @@ public:
     int getHeading(phyVector s, phyVector Xv, double *commanded_heading);
     double getApoapsisPeriapsis(double *apo, double *peri);
     double getParam(std::string pname);
-    ~CGuidance() = default;
+    void guidInit(guidInitPkt guidInitPacket);
+    void setDataLogFile(std::ofstream *file);
+    ~CGuidance();
 };
 
 #endif

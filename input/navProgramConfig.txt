@@ -1,0 +1,3 @@
+STRING imuToNavFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/imuToNavFIFO
+STRING navToGuidFName /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/navToGuidFIFO
+STRING navInitFIFO /home/srinidhi/Documents/Simulations/Orbital_Mechanics/CppSim/operateFiles/navInitFIFO

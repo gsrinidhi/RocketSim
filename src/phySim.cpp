@@ -113,21 +113,32 @@ int phySim::simInitFile(std::string fname) {
 
     guidToSimFileName = configMap_string["guidToSimFName"];
     simToGuidFileName = configMap_string["simToGuidFName"];
+    imuFileName = configMap_string["imuFileName"];
 
-    std::cout<<"In sim, Sim to guid fname = " << simToGuidFileName.data() << std::endl;
+    std::cout<<"In sim, Sim to imu fname = " << imuFileName.data() << std::endl;
     std::cout<<"In sim, guid to Sim fname = " << guidToSimFileName.data() << std::endl;
 
     //convention: open guidToSim file in both simulator and guidance
     guidToSim_fd = open(guidToSimFileName.data(),O_RDONLY);
 
-    simToGuid_fd = open(simToGuidFileName.data(),O_WRONLY | O_NONBLOCK);
-    if(simToGuid_fd == -1) {
-        std::cout << "Waiting for guidance to open simToGuid" << std::endl;
+    // simToGuid_fd = open(simToGuidFileName.data(),O_WRONLY | O_NONBLOCK);
+    // if(simToGuid_fd == -1) {
+    //     std::cout << "Waiting for guidance to open simToGuid" << std::endl;
+    // }
+
+    // //try until reader opens
+    // while(simToGuid_fd == -1) {
+    //     simToGuid_fd = open(simToGuidFileName.data(),O_WRONLY | O_NONBLOCK);
+    // }
+
+    imu_fd = open(imuFileName.data(),O_WRONLY | O_NONBLOCK);
+    if(imu_fd == -1) {
+        std::cout << "Waiting for imu to open imu file" << std::endl;
     }
 
     //try until reader opens
-    while(simToGuid_fd == -1) {
-        simToGuid_fd = open(simToGuidFileName.data(),O_WRONLY | O_NONBLOCK);
+    while(imu_fd == -1) {
+        imu_fd = open(imuFileName.data(),O_WRONLY | O_NONBLOCK);
     }
 
     mass = Mfo + Ms + Mp;
@@ -175,12 +186,17 @@ void phySim::guidInit(std::string gInitFile) {
     simToGuid_Init_Packet.inclination = inclination;
     simToGuid_Init_Packet.phi_init = phi_init;
     simToGuid_Init_Packet.theta_init = theta_init;
-    write(simToGuid_fd,&simToGuid_Init_Packet,sizeof(simToGuidInitPkt));
+    write(simToGuid_fd,&simToGuid_Init_Packet,sizeof(guidInitPkt));
     // g1->setEarthSpecs(Me,Re);
     // g1->setAltitudeThresholds(50e3,50e3);
     // g1->guidInitFile(gInitFile);
     // g1->setLogFile(logfile);
     // g1->guidInit(s,phi_init,theta_init,inclination);
+}
+
+void phySim::navInit(Quaternion cmd_q) {
+    imuPkt.cmd_q = cmd_q;
+    write(imu_fd,&imuPkt,sizeof(imuInputPkt));
 }
 
 void phySim::updateLocalFrame(phyVector v,double *local_FPA) {
@@ -673,6 +689,44 @@ void phySim::populateCylinderVertices(double radius,double height,SimObject *obj
     }
 }
 
+void phySim::populateCuboidVertices(double length,double width,double height,SimObject *obj) {
+    // Define the 8 vertices of the cuboid
+    float halfLength = length / 2.0f;
+    float halfWidth = width / 2.0f;
+    float halfHeight = height / 2.0f;
+
+    std::vector<phyVector> vertices = {
+        phyVector(-halfLength, -halfWidth, -halfHeight),
+        phyVector(halfLength, -halfWidth, -halfHeight),
+        phyVector(halfLength, halfWidth, -halfHeight),
+        phyVector(-halfLength, halfWidth, -halfHeight),
+        phyVector(-halfLength, -halfWidth, halfHeight),
+        phyVector(halfLength, -halfWidth, halfHeight),
+        phyVector(halfLength, halfWidth, halfHeight),
+        phyVector(-halfLength, halfWidth, halfHeight)
+    };
+
+    // Add vertices to the object
+    for (const auto& vertex : vertices) {
+        obj->addVertex(vertex.x, vertex.y, vertex.z);
+    }
+
+    // Define the indices for the 12 triangles that make up the cuboid
+    std::vector<unsigned int> indices = {
+        0, 1, 2, 2, 3, 0,
+        4, 5, 6, 6, 7, 4,
+        0, 1, 5, 5, 4, 0,
+        2, 3, 7, 7, 6, 2,
+        1, 2, 6, 6, 5, 1,
+        3, 0, 4, 4, 7, 3
+    };
+
+    // Add indices to the object
+    for (const auto& index : indices) {
+        obj->addIndex(index);
+    }
+}
+
 void phySim::populateConeVertices(double radius,double height,SimObject *obj) {
     int sectors = 36;
     int stacks = 18;
@@ -748,6 +802,7 @@ void phySim::simLoop() {
     SimBody rocket_body;
     SimObject rocket_cylinder,rocket_cone,earth,rocket_plume,fin1,fin2;
     SimObject axis_x,axis_y,axis_z;
+    SimObject rocket_imu;
     axis_x.setPosition(phyVector(0, 0, 0));
     axis_y.setPosition(phyVector(0, 0, 0));
     axis_z.setPosition(phyVector(0, 0, 0));
@@ -766,6 +821,8 @@ void phySim::simLoop() {
     fin2.setPosition(phyVector(s.x , (s.y - rocket_radius*1.1) , s.z ));
     fin1.setBodyFrameAxes(Zv,-Yv,Xv);
     fin2.setBodyFrameAxes(Zv,-Yv,Xv);
+    rocket_imu.setPosition(phyVector((s.x + rocket_height) , s.y , s.z ));
+    rocket_imu.setBodyFrameAxes(Zv,-Yv,Xv);
     populateSphereVertices(Re_scale * Re,&earth_vertices,&earth_indices);
     earth.setVerticesAndIndices(earth_vertices,earth_indices);
     populateCylinderVertices(rocket_radius * Re_scale,rocket_height * Re_scale,&rocket_cylinder);
@@ -773,6 +830,7 @@ void phySim::simLoop() {
     populateConeVertices(rocket_radius * Re_scale,rocket_height/10 * Re_scale,&rocket_plume);
     populateConeVertices(rocket_radius/10 * Re_scale,rocket_height/10 * Re_scale,&fin1);
     populateConeVertices(rocket_radius/10 * Re_scale,rocket_height/10 * Re_scale,&fin2);
+    populateCuboidVertices(rocket_radius/10 * Re_scale,rocket_radius/10 * Re_scale,rocket_height/10 * Re_scale,&rocket_imu);
     earth.setColor(0.0, 0.0, 1.0); // Blue color
     earth.initOpenGLBuffers();
     rocket_cylinder.setColor(1.0, 0.0, 0.0); // Red color
@@ -785,6 +843,8 @@ void phySim::simLoop() {
     fin1.initOpenGLBuffers();
     fin2.setColor(0.5, 0.5, 0.5); // Gray color
     fin2.initOpenGLBuffers();
+    rocket_imu.setColor(0.5, 0.5, 0.5); // Gray color
+    rocket_imu.initOpenGLBuffers();
 
     std::cout << "Vertices: "
           << earth_vertices.size()
@@ -884,6 +944,7 @@ void phySim::simLoop() {
     fin2.setLoc(modelLoc,viewLoc,projLoc,colorLoc,offset);
     rocket_cylinder.setLoc(modelLoc,viewLoc,projLoc,colorLoc,offset);
     rocket_cone.setLoc(modelLoc,viewLoc,projLoc,colorLoc,offset);
+    rocket_imu.setLoc(modelLoc,viewLoc,projLoc,colorLoc,offset);
     // rocket_plume.setLoc(modelLoc,viewLoc,projLoc,colorLoc,offset);
 
     phyVector offset1(0, 0, 0);
@@ -891,11 +952,13 @@ void phySim::simLoop() {
     phyVector offset3(-rocket_height/15 , 0, 0);
     phyVector offset4(0, rocket_radius * 1.1 , 0);
     phyVector offset5(0, -rocket_radius * 1.1 , 0);
-    rocket_body.addObject(rocket_cylinder, offset1);
-    rocket_body.addObject(rocket_cone, offset2);
-    rocket_body.addObject(rocket_plume, offset3);
-    rocket_body.addObject(fin1, offset4);
-    rocket_body.addObject(fin2, offset5);
+    Quaternion identity_quat(1, 0, 0, 0);
+    rocket_body.addObject(rocket_cylinder, offset1, identity_quat);
+    rocket_body.addObject(rocket_cone, offset2, identity_quat);
+    rocket_body.addObject(rocket_plume, offset3, identity_quat);
+    rocket_body.addObject(fin1, offset4, identity_quat);
+    rocket_body.addObject(fin2, offset5, identity_quat);
+    rocket_body.addObject(rocket_imu, offset2, identity_quat);
     rocket_body.setLoc(modelLoc,viewLoc,projLoc,colorLoc,offset);
     rocket_body.setBodyFrameAxes(Zv,-Yv,Xv);
 
@@ -952,7 +1015,7 @@ void phySim::simLoop() {
 
     setLogFile(&logfile);
 
-    guidInit("input/Guid_Input_Params.txt");
+    // guidInit("input/Guid_Input_Params.txt");
 
     sim_iter = 0;
 
@@ -974,6 +1037,10 @@ void phySim::simLoop() {
 
     int write_status,read_status;
     int read_bytes = 0;
+
+    cmd_q = Quaternion::getRotationQuaternion(Zv,-Yv,Xv);
+
+    navInit(cmd_q);
 
     
 
@@ -1004,11 +1071,13 @@ void phySim::simLoop() {
                 std::cout<<"iter no = " << sim_iter << std::endl;
                 time = sim_iter * dt;
                 updateLocalFrame(v,&local_FPA);
-                makeSimToGuidPacket();
-                write(simToGuid_fd,&simToGuid_Packet,sizeof(simToGuidPkt));
-                read_bytes = read(guidToSim_fd,&guidToSim_Packet,sizeof(guidToSimPkt));
+                // makeSimToGuidPacket();
+                makeImuPacket(cmd_q);
+                // write(simToGuid_fd,&simToGuid_Packet,sizeof(simToGuidPkt));
+                write(imu_fd,&imuPkt,sizeof(universalPkt));
+                read_bytes = read(guidToSim_fd,&guidToSim_Packet,sizeof(universalPkt));
                 while(read_bytes == -1) {
-                    read_bytes = read(guidToSim_fd,&guidToSim_Packet,sizeof(guidToSimPkt));
+                    read_bytes = read(guidToSim_fd,&guidToSim_Packet,sizeof(universalPkt));
                 }
                 std::cout<< "Read bytes = " << read_bytes << std::endl;
                 cmd_q = guidToSim_Packet.cmd_q;
@@ -1123,4 +1192,17 @@ void phySim::makeSimToGuidPacket() {
     simToGuid_Packet.Yv = Yv;
     simToGuid_Packet.Zv = Zv;
     simToGuid_Packet.local_FPA = local_FPA;
+}
+
+void phySim::makeImuPacket(Quaternion cmd_q) {
+    imuPkt.a = a;
+    imuPkt.cmd_q = cmd_q;
+    imuPkt.dt = dt;
+    imuPkt.s = s;
+    imuPkt.v = v;
+    imuPkt.time = time;
+    imuPkt.Xv = Xv;
+    imuPkt.Yv = Yv;
+    imuPkt.Zv = Zv;
+    imuPkt.local_FPA = local_FPA;
 }
